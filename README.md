@@ -10,3 +10,11 @@ To install necessary development dependencies (ESLint for checking JS code), run
 ```bash
 npm install
 ```
+
+## Linting
+
+To check the JavaScript files for code quality and style issues, run the following command:
+
+```bash
+npm run lint
+```
