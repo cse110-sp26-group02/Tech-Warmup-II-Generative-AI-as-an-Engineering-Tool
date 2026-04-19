@@ -77,7 +77,9 @@
     "yocto-queue": "^0.1.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npm run lint:js",
+    "lint:js": "npx eslint \"ai-app/base-code/**/*.js\""
   },
   "keywords": [],
   "author": "",
