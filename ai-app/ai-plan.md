@@ -14,11 +14,35 @@ Before development, we will conduct thorough research on the slot machine domain
 Based on our research, we will define the core components of our desired slot machine application.
 
 - **Core Features:**
-  - *(To be defined)*
+  - Spinning reel structure: 3 or 5 reel structure, grid/cluster types
+  - Paylines: Fixed vs adjustable paylines
+  - Multiplier: Multiples win by a set factor (2x, 5x. 10x).
+  - Accurate Math
+  - Symbols: Low-value and high-value symbols. High value symbols are usually tied to slot machine themes.
+  - Wild: Substitutes for regular symbols to complete winning combos.
+  - Scatter: Triggers free spins, bonus rounds, or multipliers
+  - Bonus symbol: Unlocks special mini-games or bonus rounds
+  - Lever with working physics
+
 - **Bonus Features:**
-  - *(To be defined)*
+  - Music and Sound
+  - Win Screen
+  - Share/screenshot jackpot win
+  - Multiple UI’s / themes to choose from
+  - Leaderboards
+  - Daily login/Welcome Bonus
+  - Tasks/mini-games sidebar to win bonuses
+  - Cheerful cartoons, icons, emojis,...
+  - Example icons: horseshoes, diamonds, spades, hearts and a Liberty Bell
+  - Multiple Languages
+  - Light/Dark / switch themes
+
 - **Theme/Style:**
-  - *(To be defined)*
+  - Red/Yellow & Black/White
+  - Blue / Pink (sweat theme)
+  - Dollar signs ($)
+  - Medieval theme (1900s) - brown
+
 
 ## 3. AI-Driven Development Workflow
 
