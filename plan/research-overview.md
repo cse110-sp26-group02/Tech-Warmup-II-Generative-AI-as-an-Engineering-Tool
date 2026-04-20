@@ -126,22 +126,24 @@ This document provides a summary of the initial research phase for the "Tech War
 - As a **responsible gamer**, I want **to set daily or weekly deposit limits during signup** so that **I can manage my budget effectively from day one.**
 - As a **skeptical gambler**, I want **the odds to be verifiable and backed by the IRS** so that **I know I have a chance at winning.**
 - As an **avid gambler**, I want **a lot of themes to switch between** so that **I do not get bored after playing one theme for too long.**
+- As a **new player**, I want **an interactive tutorial when I first open the app** so that **I understand how the slot machine works before spending any money.**
+- As a **player who has lost a lot in a session**, I want **the app to detect unusual spending patterns and prompt me with a cooldown or break reminder** so that **I don't make impulsive decisions.**
 
 ## Team Roster and Contributions
 
 | Team Member | Contribution |
 | --- | --- |
 | Abdurrahman Syed |  |
-| Andrew Le | Researched history and origin  |
+| Andrew Le | Researched history and origin.  |
 | Andre Stransky |  |
-| Gurnoor Bola | Researched user perspectives/persona |
-| Jason Wang | Researched history/origin, feature-gap analysis, and definition |
-| Justine Le | |
-| Mani Schabani-Qassri | Researched user perspectives/persona/stories  |
-| Paul Montal | Researched terminology, and regulations  |
+| Gurnoor Bola | Researched user perspectives/persona. |
+| Jason Wang | Researched history/origin, feature-gap analysis, and definition. |
+| Justine Le | Researched user perspectives/stories. |
+| Mani Schabani-Qassri | Researched user perspectives/persona/stories.  |
+| Paul Montal | Researched terminology, and regulations.  |
 | Sahil Dalal  | Researched regulations, user stories, terminology, and features. |
 | Scott Pham| Researched terminology, features, and user stories. |
-| Sophia Ali  | Researched feature gap analysis |
+| Sophia Ali  | Researched feature gap analysis. |
 
 
 ## Research Artifacts and More Details

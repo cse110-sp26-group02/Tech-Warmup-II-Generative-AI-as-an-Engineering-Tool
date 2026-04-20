@@ -62,6 +62,32 @@ Five user stories based on our personas that describe possible key features for 
 **So that** I do not get bored after playing one theme for too long.
 
 **Features Necessary for User:**
-- Multiple different UI’s, take different vegas slot machines for reference.,
+- Multiple different UI’s, take different vegas slot machines for reference.
+
+---
+
+### Story 6:
+
+**As a** new player,
+**I want** an interactive tutorial when I first open the app
+**So that** I understand how the slot machine works before spending any money.
+
+**Features Necessary for User:**
+- Guided walkthrough on first launch (explaining paylines, symbols, and bet amounts)
+- Demo/free spin mode with no real money
+- Skip option for returning users
+
+---
+
+### Story 7:
+
+**As a** player who has lost a lot in a session,
+**I want** the app to detect unusual spending patterns and prompt me with a cooldown or break reminder
+**So that** I don't make impulsive decisions.
+
+**Features Necessary for User:**
+- Algorithm to flag rapid, repeated high-bet losses in a short window
+- Prompt suggesting a break
+- Optional self-exclusion timer (e.g. lock out for 1 hr, 24 hrs)
 
 
