@@ -45,6 +45,7 @@ The project will be developed in distinct phases, building upon each other.
     -   Provide the AI with the research overview, user personas, and user stories.
     -   Establish the desired architecture and development plan.
 - **Note:** No code/files will be generated in this phase.
+- **Prompt:** Can be found in [ai-use-log](./ai-use-log.md)
 
 ### Phase 1: Core Game Engine (JavaScript)
 
