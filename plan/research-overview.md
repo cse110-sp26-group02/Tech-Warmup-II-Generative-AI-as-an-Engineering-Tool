@@ -50,6 +50,10 @@ This document provides a summary of the initial research phase for the "Tech War
 | Pay table | A table listing the number of credits a player will receive if the symbols listed on the table line up on the pay line |
 | Wild symbols| These substitute for most other symbols in the game similar to a joker card |
 | Optimal play | A payout strategy based on a gambler using the optimal strategy in a skill-based slot machine game |
+| Cascading Reels |Game style where symbols fall/shift/disappear and allow other ones to fall/shift/appear in their place, causing multiple wins |
+| Max Bet| Highest allowed bet per turn/overall |
+| Min Bet| Lowest allowed bet per turn/overall
+
 
 ### Regulations
 *A summary of common regulations for slot machines and gambling applications.*
@@ -129,13 +133,20 @@ This document provides a summary of the initial research phase for the "Tech War
 - As a **new player**, I want **an interactive tutorial when I first open the app** so that **I understand how the slot machine works before spending any money.**
 - As a **player who has lost a lot in a session**, I want **the app to detect unusual spending patterns and prompt me with a cooldown or break reminder** so that **I don't make impulsive decisions.**
 
+### Odds/Payout Specifics
+
+- Gaming machines must have a return of between 85% and 92% over their lifetime. This means that for every dollar bet on a gaming machine, between 85 and 92 cents is returned to gamblers over time (casinos set the upper limit on the return to players).
+
+- The truth is, with gaming machines you only have around a 1 in 7,000,000 chance of winning the top prize (playing maximum lines, ways or patterns).
+
+
 ## Team Roster and Contributions
 
 | Team Member | Contribution |
 | --- | --- |
-| Abdurrahman Syed |  |
+| Abdurrahman Syed | Researched user odds/payout specifics|
 | Andrew Le | Researched history and origin.  |
-| Andre Stransky |  |
+| Andre Stransky | Researched terminology |
 | Gurnoor Bola | Researched user perspectives/persona. |
 | Jason Wang | Researched history/origin, feature-gap analysis, and definition. |
 | Justine Le | Researched user perspectives/stories. |
