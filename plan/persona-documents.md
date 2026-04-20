@@ -26,6 +26,7 @@
 
 **Image/Avatar:**
 
+
 <img src="./raw-research/william-shakespeare-persona2.png" alt="William Shakespeare" width="200" />
 
 - **Name:** William Shakespeare
@@ -34,12 +35,14 @@
 - **Location:** Stratford-upon-Avon, United Kingdom
 
 ### Bio
-- Shakespeare is a middle aged man who does a lot of writing in his free time. Being as good as he is comes with a lot of pressure so he looks for ways to take the edge off.
+
+-  Shakespeare is a middle aged man who does a lot of writing in his free time. Being as good as he is comes with a lot of pressure so he looks for ways to take the edge off.
 
 ### Goals
 - Winning is not the main driver here, although greatly appreciated. Shakespeare likes the thrill of gambling, the fancy animations, the stakes being high and being able to compete in something that he doesn’t have to think much about. Just something to retreat too when the writing gets to his head.
 
 ### Dislikes
-- He’s an impatient guy, so waiting for stuff will drive his interest off elsewhere, he also doesn’t like when his user data is tracked.
+-  He’s an impatient guy, so waiting for stuff will drive his interest off elsewhere, he also doesn’t like when his user data is tracked.
+
 
 ---

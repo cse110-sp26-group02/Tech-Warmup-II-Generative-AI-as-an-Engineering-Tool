@@ -1,6 +1,6 @@
 # User Stories for Slot Machine App
 
-Five user stories based on our personas that describe possible key features for the slot machine.
+Five user stories (minimum) based on our personas that describe possible key features for the slot machine.
 
 ---
 
@@ -8,7 +8,7 @@ Five user stories based on our personas that describe possible key features for 
 
 **As a** player who just won a jackpot,
 **I want** to easily share my win to my friends
-**So that** I can show off my achievement.
+**so that** I can show off my achievement.
 
 **Features Necessary to Have:**
 - Share button that appears after a jackpot/big win
@@ -22,7 +22,7 @@ Five user stories based on our personas that describe possible key features for 
 
 **As a** professional gambler,
 **I want** a history of my previous spins easily available
-**So that** that I can audit my spending and verify there were no glitches, and play the odds.
+**so that** that I can audit my spending and verify there were no glitches, and play the odds.
 
 **Features Necessary to Have:**
 - History of previous runs with money spent, won, and specific symbols
@@ -35,7 +35,7 @@ Five user stories based on our personas that describe possible key features for 
 
 **As a** responsible gamer,
 **I want** to set daily or weekly deposit limits during signup
-**So that** I can manage my budget effectively from day one.
+**so that** I can manage my budget effectively from day one.
 
 **Features Necessary to Have:**
 - Required question at signup: spending limits
@@ -52,6 +52,7 @@ Five user stories based on our personas that describe possible key features for 
 
 **Features Necessary for User:**
 - An about tab / hyperlink to a page that shows proper verification and full faith backing by a creditable institution so that the user feels safe.
+
 
 ---
 
@@ -89,5 +90,4 @@ Five user stories based on our personas that describe possible key features for 
 - Algorithm to flag rapid, repeated high-bet losses in a short window
 - Prompt suggesting a break
 - Optional self-exclusion timer (e.g. lock out for 1 hr, 24 hrs)
-
 
