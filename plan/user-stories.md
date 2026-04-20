@@ -46,22 +46,22 @@ Five user stories based on our personas that describe possible key features for 
 
 ### Story 4:
 
+**As a** skeptical gambler,
+**I want** the odds to be verifiable and backed by the IRS
+**So that** I know I have a chance at winning.
 
-**As a** _,
-**I want** _
-**So that** _
-
-**Features Necessary to Have:**
-- []
+**Features Necessary for User:**
+- An about tab / hyperlink to a page that shows proper verification and full faith backing by a creditable institution so that the user feels safe.
 
 ---
 
 ### Story 5:
 
+**As an** avid gambler,
+**I want** a lot of themes to switch between
+**So that** I do not get bored after playing one theme for too long.
 
-**As a** _,
-**I want** _
-**So that** _
+**Features Necessary for User:**
+- Multiple different UI’s, take different vegas slot machines for reference.,
 
-**Features Necessary to Have:**
-- []
+
