@@ -6,7 +6,7 @@
 
 This report details our team's process, findings, and learnings on using AI as an engineering tool to build a slot machine application. The goal of this exercise was to explore the interactions, challenges, and benefits of using AI in a software development workflow. We documented our entire process, from initial research and planning to final implementation and testing, to analyze how AI can impact software quality and engineering principles.
 
-This document synthesizes our experiences in our [AI Plan](./../ai-runs/ai-plan.md) and [AI Use Log](./../ai-runs/ai-use-log.md).
+This document synthesizes our experiences in our [AI Plan](../ai-app/ai-plan.md) and [AI Use Log](../ai-app/ai-use-log.md).
 
 ## 2. Our Engineering Process with AI
 
