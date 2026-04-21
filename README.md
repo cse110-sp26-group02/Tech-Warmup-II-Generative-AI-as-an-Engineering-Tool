@@ -4,6 +4,15 @@
 
 **Harness**: `Gemini CLI`
 
+
+## Model Selection Rationale
+
+*Why we chose gemini-3.1-pro-preview*
+
+
+
+
+
 ## Setup
 
 To install necessary development dependencies (ESLint for checking JS code), run the following command from the root of this repository:
@@ -19,3 +28,5 @@ To check the JavaScript files for code quality and style issues, run the followi
 ```bash
 npm run lint
 ```
+
+
