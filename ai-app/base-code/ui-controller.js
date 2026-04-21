@@ -27,7 +27,9 @@ const CONSTANTS = {
     MOBILE_BREAKPOINT: 900,
     LEVER_WIDTH: 70,
     CENTER_OFFSET: -35,
-    VERTICAL_OFFSET: -20
+    VERTICAL_OFFSET: -20,
+    HEIGHT_PADDING: 80,
+    MAX_SCALE: 0.8
 };
 
 /**
@@ -479,15 +481,15 @@ class SlotMachineUI {
         const cssWidth = 1050; 
         const cssHeight = 980;
         const paddingX = 40;
-        const paddingY = 80; // Increased padding to protect bottom edge
+        const paddingY = CONSTANTS.HEIGHT_PADDING; // Increased padding to protect bottom edge
         
         const isDesktop = window.innerWidth > CONSTANTS.MOBILE_BREAKPOINT;
         
         const finalWidth = (isDesktop ? cssWidth + CONSTANTS.LEVER_WIDTH : cssWidth) + paddingX;
         const finalHeight = cssHeight + paddingY;
         
-        // Use a more conservative scale (0.8) to ensure it fits comfortably
-        const scale = Math.min(window.innerWidth / finalWidth, window.innerHeight / finalHeight, 0.8);
+        // Use a more conservative scale to ensure it fits comfortably
+        const scale = Math.min(window.innerWidth / finalWidth, window.innerHeight / finalHeight, CONSTANTS.MAX_SCALE);
         
         // Calculate offset to perfectly center the container + lever visually.
         // The lever is 70px wide and extends to the right. We offset the container by -35px

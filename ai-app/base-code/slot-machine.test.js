@@ -30,6 +30,10 @@ const TEST_SPIN_BET = 10;
 const EXPECTED_BALANCE_AFTER_SPIN = 40;
 const INSUFFICIENT_BALANCE = 5;
 
+const VAL_0 = 0;
+const VAL_1 = 1;
+const VAL_2 = 2;
+
 const PAYOUT_TABLE = {
     CHERRY: { 
         [MATCH_3]: CHERRY_PAYOUT_3, 
@@ -77,11 +81,11 @@ function testConfiguration() {
 function testState() {
     const state = new SlotMachineState();
     
-    assert.strictEqual(state.creditBalance, 0, 'Initial balance should be 0');
-    assert.strictEqual(state.currentBet, 0, 'Initial bet should be 0');
-    assert.strictEqual(state.multiplierStatus, 1, 'Initial multiplier should be 1');
+    assert.strictEqual(state.creditBalance, VAL_0, 'Initial balance should be 0');
+    assert.strictEqual(state.currentBet, VAL_0, 'Initial bet should be 0');
+    assert.strictEqual(state.multiplierStatus, VAL_1, 'Initial multiplier should be 1');
     assert.strictEqual(state.bonusStatus, false, 'Initial bonus status should be false');
-    assert.strictEqual(state.currentSpinResultGrid.length, 0, 'Initial grid should be empty');
+    assert.strictEqual(state.currentSpinResultGrid.length, VAL_0, 'Initial grid should be empty');
     
     state.setCreditBalance(TEST_CREDIT_BALANCE);
     assert.strictEqual(state.creditBalance, TEST_CREDIT_BALANCE, 'Balance should update to TEST_CREDIT_BALANCE');
@@ -93,8 +97,8 @@ function testState() {
     state.setSpinResult(mockGrid);
     assert.deepStrictEqual(state.currentSpinResultGrid, mockGrid, 'Spin result grid should update');
 
-    state.setMultiplierStatus(2);
-    assert.strictEqual(state.multiplierStatus, 2, 'Multiplier should update to 2');
+    state.setMultiplierStatus(VAL_2);
+    assert.strictEqual(state.multiplierStatus, VAL_2, 'Multiplier should update to 2');
 
     state.setBonusStatus(true);
     assert.strictEqual(state.bonusStatus, true, 'Bonus status should update to true');
@@ -106,9 +110,9 @@ function testState() {
  */
 function testRngService() {
     const randomInt = RngService.getRandomInteger(MAX_RANDOM);
-    assert.ok(randomInt >= 0 && randomInt < MAX_RANDOM, 'Random integer should be within bounds');
+    assert.ok(randomInt >= VAL_0 && randomInt < MAX_RANDOM, 'Random integer should be within bounds');
 
-    const weights = { CHERRY: CHERRY_WEIGHT, WILD: 0 };
+    const weights = { CHERRY: CHERRY_WEIGHT, WILD: VAL_0 };
     const symbol = RngService.getRandomSymbol(weights);
     assert.strictEqual(symbol, 'CHERRY', 'Should always pick CHERRY given weights');
 
@@ -123,8 +127,8 @@ function testRngService() {
     const grid = RngService.generateGrid(config);
 
     assert.strictEqual(grid.length, ROWS_COUNT, 'Grid should have ROWS_COUNT rows');
-    assert.strictEqual(grid[0].length, REELS_COUNT, 'Row should have REELS_COUNT reels');
-    assert.strictEqual(grid[0][0], 'CHERRY', 'Grid symbols should be CHERRY');
+    assert.strictEqual(grid[VAL_0].length, REELS_COUNT, 'Row should have REELS_COUNT reels');
+    assert.strictEqual(grid[VAL_0][VAL_0], 'CHERRY', 'Grid symbols should be CHERRY');
 }
 
 /**
@@ -153,7 +157,7 @@ function testEvaluator() {
         reels: REELS_COUNT,
         rows: ROWS_COUNT,
         paylineStructure: 'fixed',
-        symbolWeightedMap: { CHERRY: 100 },
+        symbolWeightedMap: { CHERRY: CHERRY_WEIGHT },
         payoutTable: PAYOUT_TABLE
     };
     const config = new SlotMachineConfig(configData);
@@ -220,8 +224,8 @@ function testSpinMultiplier() {
     const state = engine.state;
     
     state.setCreditBalance(TEST_SPIN_BALANCE);
-    state.setCurrentBet(0); 
-    state.setMultiplierStatus(2); 
+    state.setCurrentBet(VAL_0); 
+    state.setMultiplierStatus(VAL_2); 
     
     const mockGrid = [
         ['CHERRY', 'CHERRY', 'CHERRY', 'BLANK', 'BLANK'],
@@ -236,11 +240,16 @@ function testSpinMultiplier() {
      * @returns {Array<Array<string>>} The mock grid.
      */
     RngService.generateGrid = () => mockGrid;
+
+    const originalRandom = Math.random;
+    // Mock Math.random to always return a value that triggers a multiplier and picks the first one (2x)
+    Math.random = () => VAL_0;
     
     const winResult = engine.spin();
-    assert.strictEqual(winResult.payout, CHERRY_PAYOUT_3 * 2, 'Payout should be multiplied by 2');
+    assert.strictEqual(winResult.payout, CHERRY_PAYOUT_3 * VAL_2, 'Payout should be multiplied by 2');
     
     RngService.generateGrid = originalGenerateGrid;
+    Math.random = originalRandom;
 }
 
 /**
@@ -275,7 +284,7 @@ function testLeverPhysics() {
     const shortResult = physics.endPull(TEST_TIME_END);
     
     assert.strictEqual(shortResult.triggered, false, 'Short pull should not trigger');
-    assert.strictEqual(shortResult.spinPower, 0, 'Short pull power should be 0');
+    assert.strictEqual(shortResult.spinPower, VAL_0, 'Short pull power should be 0');
 
     // Test full pull (triggered)
     physics.startPull(TEST_START_Y, TEST_TIME_START);
