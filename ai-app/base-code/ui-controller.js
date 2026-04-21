@@ -3,349 +3,442 @@
  * Bridges the DOM with the core SlotMachineEngine and LeverPhysicsEngine.
  */
 
-/* global SlotMachineConfig, SlotMachineState, SlotMachineEngine, LeverPhysicsEngine */
+/* global SlotMachineConfig, SlotMachineState, SlotMachineEngine, LeverPhysicsEngine, RngService */
 
-// Wait for DOM to load before initializing
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize Core Game Components
-    const configData = {
-        reels: 5,
-        rows: 3,
-        paylineStructure: 'fixed',
-        symbolWeightedMap: {
-            'CHERRY': 100,
-            'WILD': 5,
-            'SCATTER': 10,
-            'BONUS': 15,
-            'HELMET': 25,
-            'SWORD': 30,
-            'COIN': 50,
-            'VASE': 40
-        },
-        payoutTable: {
-            'CHERRY': { 3: 10, 4: 20, 5: 50 },
-            'HELMET': { 3: 15, 4: 30, 5: 100 },
-            'SWORD': { 3: 20, 4: 40, 5: 150 },
-            'COIN': { 3: 5, 4: 10, 5: 25 },
-            'VASE': { 3: 8, 4: 15, 5: 35 },
-            'WILD': { 3: 50, 4: 100, 5: 500 }
-        }
-    };
+/**
+ * Constants for the Slot Machine UI
+ * @type {Object}
+ */
+const CONSTANTS = {
+    PULL_DISTANCE: 100,
+    START_CREDITS: 1000,
+    DEFAULT_BET: 10,
+    DEFAULT_POWER: 5,
+    ANIM_DELAY_STEP: 0.15,
+    BASE_SPIN_DURATION: 1500,
+    POWER_MULTIPLIER: 50,
+    RESULTS_DELAY: 500,
+    ADD_CREDITS_AMOUNT: 500,
+    MAX_ROTATION: 75,
+    ROTATION_MULTIPLIER: 60,
+    ROTATION_SCALE: 200,
+    RADIX: 10
+};
 
-    const config = new SlotMachineConfig(configData);
-    const state = new SlotMachineState();
-    const engine = new SlotMachineEngine(config, state);
-    
-    // Physics engine: 100px pull distance required to trigger spin
-    const leverPhysics = new LeverPhysicsEngine(100);
-
-    // Initial setup
-    state.setCreditBalance(1000); // Start with 1000 credits
-    state.setCurrentBet(10);      // Default bet
-
-    // 2. DOM Elements Mapping
-    const elements = {
-        creditDisplay: document.getElementById('credit-display'),
-        betDisplay: document.getElementById('bet-display'),
-        multiplierDisplay: document.getElementById('multiplier-display'),
-        betValueInfo: document.getElementById('bet-value-info'),
-        betAmountInput: document.getElementById('bet-amount'),
-        betValueDisplay: document.getElementById('bet-value-display'),
-        reelsGrid: document.getElementById('reels-grid'),
-        statusMessage: document.getElementById('status-message'),
-        btnSpin: document.getElementById('btn-spin'),
-        btnLever: document.getElementById('btn-lever'),
-        btnAddCredits: document.getElementById('btn-add-credits'),
-        btnCashout: document.getElementById('btn-cashout'),
-        resultsPanel: document.getElementById('results-panel'),
-        payoutDisplay: document.getElementById('payout-display'),
-        scatterDisplay: document.getElementById('scatter-display'),
-        bonusDisplay: document.getElementById('bonus-display'),
-        btnCloseResults: document.getElementById('btn-close-results'),
-        spinIndicator: document.getElementById('spin-indicator')
-    };
-
-    // State flags for UI interaction
-    let isSpinning = false;
-    
-    // 3. UI Update Functions
-    
+/**
+ * Main UI Controller Class
+ */
+class SlotMachineUI {
     /**
-     * Updates all informational displays (balance, bet, multiplier).
+     * Initializes the SlotMachineUI
      */
-    function updateDisplays() {
-        elements.creditDisplay.textContent = state.creditBalance;
-        elements.betDisplay.textContent = state.currentBet;
-        elements.betValueInfo.textContent = state.currentBet;
-        elements.multiplierDisplay.textContent = state.multiplierStatus + 'x';
-        
-        // Update slider visually to match state if changed programmatically
-        elements.betAmountInput.value = state.currentBet;
-        elements.betValueDisplay.textContent = `Current: ${state.currentBet}`;
-        
-        // Disable spin if not enough credits
-        if (state.creditBalance < state.currentBet) {
-            elements.btnSpin.disabled = true;
-            elements.btnLever.disabled = true;
-        } else if (!isSpinning) {
-            elements.btnSpin.disabled = false;
-            elements.btnLever.disabled = false;
-        }
+    constructor() {
+        this.isSpinning = false;
+        this.initConfig();
+        this.initElements();
+        this.bindEvents();
+        this.initialRender();
     }
 
     /**
-     * Updates the status message for screen readers and visual display.
-     * @param {string} message - The message to display.
+     * Initializes the game configuration, state, engine and physics.
      */
-    function setStatus(message) {
-        elements.statusMessage.textContent = message;
-    }
-
-    /**
-     * Renders the symbol grid into the DOM.
-     * @param {Array<Array<string>>} gridData - The 2D array of symbols.
-     * @param {boolean} highlightWin - Whether to apply win animation classes.
-     */
-    function renderGrid(gridData, highlightWin = false) {
-        elements.reelsGrid.innerHTML = ''; // Clear current grid
-        
-        for (let rowIdx = 0; rowIdx < config.rows; rowIdx++) {
-            for (let reelIdx = 0; reelIdx < config.reels; reelIdx++) {
-                const cell = document.createElement('div');
-                cell.className = 'reel-cell';
-                cell.setAttribute('role', 'gridcell');
-                cell.dataset.reelIdx = reelIdx;
-                
-                const symbolStr = gridData[rowIdx][reelIdx];
-                const img = document.createElement('img');
-                img.className = 'symbol-img symbol';
-                img.alt = symbolStr;
-                
-                const symbolMap = {
-                    'CHERRY': 'cherry.png',
-                    'WILD': '1.jpg',
-                    'SCATTER': '2.jpg',
-                    'BONUS': '3.jpg',
-                    'HELMET': '4.jpg',
-                    'SWORD': 'sword.png',
-                    'COIN': 'coin.png',
-                    'VASE': 'jar.png'
-                };
-                
-                img.src = `./assets/${symbolMap[symbolStr]}`;
-                img.style.width = '80%';
-                img.style.height = '80%';
-                img.style.objectFit = 'contain';
-                
-                // Add specific styling class based on symbol type
-                if (symbolStr === 'WILD') {
-                    img.classList.add('symbol-wild');
-                } else if (symbolStr === 'SCATTER') {
-                    img.classList.add('symbol-scatter');
-                } else if (['HELMET', 'SWORD'].includes(symbolStr)) {
-                    img.classList.add('symbol-high');
-                } else {
-                    img.classList.add('symbol-low');
-                }
-
-                // If this is a winning render, we could selectively highlight here.
-                // For now, we apply to all if it's a win for the visual effect.
-                if (highlightWin && symbolStr !== 'BLANK') {
-                    cell.classList.add('win-highlight');
-                }
-
-                cell.appendChild(img);
-                elements.reelsGrid.appendChild(cell);
+    initConfig() {
+        const configData = {
+            reels: 5,
+            rows: 3,
+            paylineStructure: 'fixed',
+            symbolWeightedMap: {
+                'CHERRY': 100,
+                'WILD': 5,
+                'SCATTER': 10,
+                'BONUS': 15,
+                'HELMET': 25,
+                'SWORD': 30,
+                'COIN': 50,
+                'VASE': 40
+            },
+            payoutTable: {
+                'CHERRY': { 3: 10, 4: 20, 5: 50 },
+                'HELMET': { 3: 15, 4: 30, 5: 100 },
+                'SWORD': { 3: 20, 4: 40, 5: 150 },
+                'COIN': { 3: 5, 4: 10, 5: 25 },
+                'VASE': { 3: 8, 4: 15, 5: 35 },
+                'WILD': { 3: 50, 4: 100, 5: 500 }
             }
+        };
+
+        this.config = new SlotMachineConfig(configData);
+        this.state = new SlotMachineState();
+        this.engine = new SlotMachineEngine(this.config, this.state);
+        this.leverPhysics = new LeverPhysicsEngine(CONSTANTS.PULL_DISTANCE);
+
+        this.state.setCreditBalance(CONSTANTS.START_CREDITS);
+        this.state.setCurrentBet(CONSTANTS.DEFAULT_BET);
+    }
+
+    /**
+     * Maps DOM elements to properties.
+     */
+    initElements() {
+        this.elements = {
+            creditDisplay: document.getElementById('credit-display'),
+            betDisplay: document.getElementById('bet-display'),
+            multiplierDisplay: document.getElementById('multiplier-display'),
+            betValueInfo: document.getElementById('bet-value-info'),
+            betAmountInput: document.getElementById('bet-amount'),
+            betValueDisplay: document.getElementById('bet-value-display'),
+            reelsGrid: document.getElementById('reels-grid'),
+            statusMessage: document.getElementById('status-message'),
+            btnSpin: document.getElementById('btn-spin'),
+            btnLever: document.getElementById('btn-lever'),
+            btnAddCredits: document.getElementById('btn-add-credits'),
+            btnCashout: document.getElementById('btn-cashout'),
+            resultsPanel: document.getElementById('results-panel'),
+            payoutDisplay: document.getElementById('payout-display'),
+            scatterDisplay: document.getElementById('scatter-display'),
+            bonusDisplay: document.getElementById('bonus-display'),
+            btnCloseResults: document.getElementById('btn-close-results'),
+            spinIndicator: document.getElementById('spin-indicator')
+        };
+    }
+
+    /**
+     * Updates UI displays based on state.
+     */
+    updateDisplays() {
+        this.elements.creditDisplay.textContent = this.state.creditBalance;
+        this.elements.betDisplay.textContent = this.state.currentBet;
+        this.elements.betValueInfo.textContent = this.state.currentBet;
+        this.elements.multiplierDisplay.textContent = this.state.multiplierStatus + 'x';
+        
+        this.elements.betAmountInput.value = this.state.currentBet;
+        this.elements.betValueDisplay.textContent = `Current: ${this.state.currentBet}`;
+        
+        if (this.state.creditBalance < this.state.currentBet) {
+            this.elements.btnSpin.disabled = true;
+            this.elements.btnLever.disabled = true;
+        } else if (!this.isSpinning) {
+            this.elements.btnSpin.disabled = false;
+            this.elements.btnLever.disabled = false;
         }
     }
 
     /**
-     * Shows the results modal.
-     * @param {Object} result - The spin result object.
+     * Sets the status message.
+     * @param {string} message The status message to display.
      */
-    function showResults(result) {
-        elements.payoutDisplay.textContent = result.payout;
-        elements.scatterDisplay.textContent = result.scatters;
-        elements.bonusDisplay.textContent = result.bonuses;
-        elements.resultsPanel.classList.remove('hidden');
-        elements.resultsPanel.setAttribute('aria-hidden', 'false');
+    setStatus(message) {
+        this.elements.statusMessage.textContent = message;
     }
 
     /**
-     * Hides the results modal.
+     * Renders the grid of symbols.
+     * @param {Array<Array<string>>} gridData 2D array of symbols.
+     * @param {boolean} highlightWin Whether to apply win highlighting.
      */
-    function hideResults() {
-        elements.resultsPanel.classList.add('hidden');
-        elements.resultsPanel.setAttribute('aria-hidden', 'true');
-    }
-
-    // 4. Core Interaction Logic
-
-    /**
-     * Handles the visual and logical execution of a spin.
-     * @param {number} power - Simulated power of the spin (0-10), affects duration.
-     */
-    async function executeSpin(power = 5) {
-        if (isSpinning || state.creditBalance < state.currentBet) return;
+    renderGrid(gridData, highlightWin = false) {
+        this.elements.reelsGrid.innerHTML = '';
         
-        isSpinning = true;
-        hideResults();
-        elements.btnSpin.disabled = true;
-        elements.btnLever.disabled = true;
-        elements.spinIndicator.classList.remove('hidden');
-        setStatus('Spinning...');
+        for (let rowIdx = 0; rowIdx < this.config.rows; rowIdx++) {
+            this.renderRow(gridData[rowIdx], highlightWin);
+        }
+    }
 
-        // Add spinning class and animation delay to simulate staggered motion
-        const cells = elements.reelsGrid.querySelectorAll('.reel-cell');
-        cells.forEach(cell => {
-            const reelIdx = cell.dataset.reelIdx || 0;
-            cell.style.animationDelay = `${reelIdx * 0.15}s`;
-            cell.classList.add('spinning');
-        });
+    /**
+     * Renders a single row of the grid.
+     * @param {Array<string>} rowData Array of symbols for the row.
+     * @param {boolean} highlightWin Whether to apply win highlighting.
+     */
+    renderRow(rowData, highlightWin) {
+        for (let reelIdx = 0; reelIdx < this.config.reels; reelIdx++) {
+            this.renderCell(rowData[reelIdx], reelIdx, highlightWin);
+        }
+    }
 
-        // Calculate spin duration based on power (inverse relation: harder pull = faster/shorter spin)
-        // Base time 1.5s, max power reduces it by up to 0.5s
-        const durationMs = 1500 - (power * 50);
+    /**
+     * Renders a single cell in the grid.
+     * @param {string} symbolStr The symbol string.
+     * @param {number} reelIdx The index of the reel.
+     * @param {boolean} highlightWin Whether to apply win highlighting.
+     */
+    renderCell(symbolStr, reelIdx, highlightWin) {
+        const cell = document.createElement('div');
+        cell.className = 'reel-cell';
+        cell.setAttribute('role', 'gridcell');
+        cell.dataset.reelIdx = reelIdx;
+        
+        const img = this.createSymbolImage(symbolStr);
+        this.applyCellHighlight(cell, symbolStr, highlightWin);
+
+        cell.appendChild(img);
+        this.elements.reelsGrid.appendChild(cell);
+    }
+
+    /**
+     * Creates an image element for a symbol.
+     * @param {string} symbolStr The symbol string.
+     * @returns {HTMLImageElement} The created image element.
+     */
+    createSymbolImage(symbolStr) {
+        const img = document.createElement('img');
+        img.className = 'symbol-img symbol';
+        img.alt = symbolStr;
+        
+        const symbolMap = {
+            'CHERRY': 'cherry.png',
+            'WILD': '1.jpg',
+            'SCATTER': '2.jpg',
+            'BONUS': '3.jpg',
+            'HELMET': '4.jpg',
+            'SWORD': 'sword.png',
+            'COIN': 'coin.png',
+            'VASE': 'jar.png'
+        };
+        
+        img.src = `./assets/${symbolMap[symbolStr]}`;
+        img.style.width = '80%';
+        img.style.height = '80%';
+        img.style.objectFit = 'contain';
+        
+        this.applySymbolClass(img, symbolStr);
+        
+        return img;
+    }
+
+    /**
+     * Applies a CSS class to a symbol image based on its type.
+     * @param {HTMLImageElement} img The image element.
+     * @param {string} symbolStr The symbol string.
+     */
+    applySymbolClass(img, symbolStr) {
+        if (symbolStr === 'WILD') {
+            img.classList.add('symbol-wild');
+        } else if (symbolStr === 'SCATTER') {
+            img.classList.add('symbol-scatter');
+        } else if (['HELMET', 'SWORD'].includes(symbolStr)) {
+            img.classList.add('symbol-high');
+        } else {
+            img.classList.add('symbol-low');
+        }
+    }
+
+    /**
+     * Applies the win highlight class to a cell.
+     * @param {HTMLElement} cell The cell element.
+     * @param {string} symbolStr The symbol string.
+     * @param {boolean} highlightWin Whether to highlight.
+     */
+    applyCellHighlight(cell, symbolStr, highlightWin) {
+        if (highlightWin && symbolStr !== 'BLANK') {
+            cell.classList.add('win-highlight');
+        }
+    }
+
+    /**
+     * Shows the spin results panel.
+     * @param {Object} result The spin result object.
+     */
+    showResults(result) {
+        this.elements.payoutDisplay.textContent = result.payout;
+        this.elements.scatterDisplay.textContent = result.scatters;
+        this.elements.bonusDisplay.textContent = result.bonuses;
+        this.elements.resultsPanel.classList.remove('hidden');
+        this.elements.resultsPanel.setAttribute('aria-hidden', 'false');
+    }
+
+    /**
+     * Hides the spin results panel.
+     */
+    hideResults() {
+        this.elements.resultsPanel.classList.add('hidden');
+        this.elements.resultsPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    /**
+     * Executes a spin.
+     * @param {number} power The power of the pull.
+     */
+    async executeSpin(power = CONSTANTS.DEFAULT_POWER) {
+        if (this.isSpinning || this.state.creditBalance < this.state.currentBet) return;
+        
+        this.startSpinMode();
+        this.animateReelsSpin();
+
+        const durationMs = CONSTANTS.BASE_SPIN_DURATION - (power * CONSTANTS.POWER_MULTIPLIER);
 
         try {
-            // Perform the logical spin immediately to get results
-            const result = engine.spin();
-            
-            // Update balance display immediately (deducting bet)
-            updateDisplays();
+            const result = this.engine.spin();
+            this.updateDisplays();
 
-            // Wait for visual animation to finish
             await new Promise(resolve => setTimeout(resolve, durationMs));
 
-            // Render final grid
-            renderGrid(result.grid, result.payout > 0);
-            updateDisplays(); // Update again for potential wins
-
-            if (result.payout > 0) {
-                setStatus(`You won ${result.payout} credits!`);
-                setTimeout(() => showResults(result), 500); // Show modal shortly after
-            } else {
-                setStatus('No win this time. Try again!');
-            }
-
+            this.finalizeSpin(result);
         } catch (error) {
-            setStatus(error.message);
+            this.setStatus(error.message);
         } finally {
-            isSpinning = false;
-            elements.spinIndicator.classList.add('hidden');
-            updateDisplays(); // Re-evaluate button states
+            this.endSpinMode();
         }
     }
 
-    // 5. Event Listeners
+    /**
+     * Starts the spin mode.
+     */
+    startSpinMode() {
+        this.isSpinning = true;
+        this.hideResults();
+        this.elements.btnSpin.disabled = true;
+        this.elements.btnLever.disabled = true;
+        this.elements.spinIndicator.classList.remove('hidden');
+        this.setStatus('Spinning...');
+    }
 
-    // Bet Slider
-    elements.betAmountInput.addEventListener('input', (e) => {
-        const val = parseInt(e.target.value, 10);
-        state.setCurrentBet(val);
-        elements.betAmountInput.setAttribute('aria-valuenow', val);
-        updateDisplays();
-    });
+    /**
+     * Ends the spin mode.
+     */
+    endSpinMode() {
+        this.isSpinning = false;
+        this.elements.spinIndicator.classList.add('hidden');
+        this.updateDisplays();
+    }
 
-    // Spin Button
-    elements.btnSpin.addEventListener('click', () => {
-        // Standard spin acts like a medium power pull
-        executeSpin(5);
-    });
+    /**
+     * Animates the reels during a spin.
+     */
+    animateReelsSpin() {
+        const cells = this.elements.reelsGrid.querySelectorAll('.reel-cell');
+        cells.forEach(cell => {
+            const reelIdx = cell.dataset.reelIdx || 0;
+            cell.style.animationDelay = `${reelIdx * CONSTANTS.ANIM_DELAY_STEP}s`;
+            cell.classList.add('spinning');
+        });
+    }
 
-    // Management Buttons
-    elements.btnAddCredits.addEventListener('click', () => {
-        state.setCreditBalance(state.creditBalance + 500);
-        setStatus('Added 500 credits.');
-        updateDisplays();
-    });
+    /**
+     * Finalizes the spin and updates results.
+     * @param {Object} result The spin result object.
+     */
+    finalizeSpin(result) {
+        const hasWin = result.payout > 0;
+        this.renderGrid(result.grid, hasWin);
+        this.updateDisplays(); 
 
-    elements.btnCashout.addEventListener('click', () => {
-        setStatus(`Cashed out ${state.creditBalance} credits. Game over.`);
-        state.setCreditBalance(0);
-        updateDisplays();
-    });
+        if (hasWin) {
+            this.setStatus(`You won ${result.payout} credits!`);
+            setTimeout(() => this.showResults(result), CONSTANTS.RESULTS_DELAY);
+        } else {
+            this.setStatus('No win this time. Try again!');
+        }
+    }
 
-    // Close Modal
-    elements.btnCloseResults.addEventListener('click', hideResults);
+    /**
+     * Handles bet input changes.
+     * @param {Event} e The input event.
+     */
+    handleBetInput(e) {
+        const val = parseInt(e.target.value, CONSTANTS.RADIX);
+        this.state.setCurrentBet(val);
+        this.elements.betAmountInput.setAttribute('aria-valuenow', val);
+        this.updateDisplays();
+    }
 
-    // 6. Lever Physics Integration
-    
-    // Bind mouse and touch events to the virtual lever
-    
+    /**
+     * Handles adding credits.
+     */
+    handleAddCredits() {
+        this.state.setCreditBalance(this.state.creditBalance + CONSTANTS.ADD_CREDITS_AMOUNT);
+        this.setStatus(`Added ${CONSTANTS.ADD_CREDITS_AMOUNT} credits.`);
+        this.updateDisplays();
+    }
+
+    /**
+     * Handles cashing out.
+     */
+    handleCashout() {
+        this.setStatus(`Cashed out ${this.state.creditBalance} credits. Game over.`);
+        this.state.setCreditBalance(0);
+        this.updateDisplays();
+    }
+
     /**
      * Handles the start of a lever pull.
-     * @param {Event} e - Mouse or touch event.
+     * @param {Event} e The mouse or touch event.
      */
-    function handleLeverStart(e) {
-        if (isSpinning || elements.btnLever.disabled) return;
-        e.preventDefault(); // Prevent scrolling on touch
+    handleLeverStart(e) {
+        if (this.isSpinning || this.elements.btnLever.disabled) return;
+        e.preventDefault();
         
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        leverPhysics.startPull(clientY, performance.now());
+        this.leverPhysics.startPull(clientY, performance.now());
         
-        // Add pulling class to disable CSS transition while actively dragging
-        elements.btnLever.classList.add('pulling');
+        this.elements.btnLever.classList.add('pulling');
     }
 
     /**
-     * Handles the movement during a lever pull.
-     * @param {Event} e - Mouse or touch event.
+     * Handles the movement of the lever pull.
+     * @param {Event} e The mouse or touch event.
      */
-    function handleLeverMove(e) {
-        if (!leverPhysics.isPulling) return;
+    handleLeverMove(e) {
+        if (!this.leverPhysics.isPulling) return;
         
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        leverPhysics.updatePull(clientY);
+        this.leverPhysics.updatePull(clientY);
         
-        // Visual feedback: rotate lever downwards based on distance
-        // Max rotation around 60 degrees. pullThreshold is 100px.
-        let distance = leverPhysics.currentY - leverPhysics.startY;
-        if (distance < 0) distance = 0; // Don't push up
+        let distance = this.leverPhysics.currentY - this.leverPhysics.startY;
+        if (distance < 0) distance = 0;
         
-        let rotation = (distance / leverPhysics.pullThreshold) * 60;
-        if (rotation > 75) rotation = 75; // Hard physical limit
+        let rotation = (distance / this.leverPhysics.pullThreshold) * CONSTANTS.ROTATION_MULTIPLIER;
+        if (rotation > CONSTANTS.MAX_ROTATION) rotation = CONSTANTS.MAX_ROTATION;
         
-        elements.btnLever.style.transform = `rotateX(${rotation}deg) scaleY(${1 - (rotation/200)})`;
+        const scaleY = 1 - (rotation / CONSTANTS.ROTATION_SCALE);
+        this.elements.btnLever.style.transform = `rotateX(${rotation}deg) scaleY(${scaleY})`;
     }
 
     /**
-     * Handles the release of the lever.
-     * @param {Event} e - Mouse or touch event.
+     * Handles the end of a lever pull.
      */
-    function handleLeverEnd(e) {
-        if (!leverPhysics.isPulling) return;
+    handleLeverEnd() {
+        if (!this.leverPhysics.isPulling) return;
         
-        const result = leverPhysics.endPull(performance.now());
+        const result = this.leverPhysics.endPull(performance.now());
         
-        // Remove pulling class to re-enable CSS transition for snap-back
-        elements.btnLever.classList.remove('pulling');
-        // Reset transform to original position (CSS transition handles the elastic snap)
-        elements.btnLever.style.transform = '';
+        this.elements.btnLever.classList.remove('pulling');
+        this.elements.btnLever.style.transform = '';
         
         if (result.triggered) {
-            executeSpin(result.spinPower);
+            this.executeSpin(result.spinPower);
         } else {
-            setStatus('Pull harder to spin!');
+            this.setStatus('Pull harder to spin!');
         }
     }
 
-    // Mouse events
-    elements.btnLever.addEventListener('mousedown', handleLeverStart);
-    document.addEventListener('mousemove', handleLeverMove);
-    document.addEventListener('mouseup', handleLeverEnd);
+    /**
+     * Binds all DOM events.
+     */
+    bindEvents() {
+        this.elements.betAmountInput.addEventListener('input', (e) => this.handleBetInput(e));
+        this.elements.btnSpin.addEventListener('click', () => this.executeSpin(CONSTANTS.DEFAULT_POWER));
+        this.elements.btnAddCredits.addEventListener('click', () => this.handleAddCredits());
+        this.elements.btnCashout.addEventListener('click', () => this.handleCashout());
+        this.elements.btnCloseResults.addEventListener('click', () => this.hideResults());
 
-    // Touch events
-    elements.btnLever.addEventListener('touchstart', handleLeverStart, { passive: false });
-    document.addEventListener('touchmove', handleLeverMove, { passive: false });
-    document.addEventListener('touchend', handleLeverEnd);
+        this.elements.btnLever.addEventListener('mousedown', (e) => this.handleLeverStart(e));
+        document.addEventListener('mousemove', (e) => this.handleLeverMove(e));
+        document.addEventListener('mouseup', () => this.handleLeverEnd());
 
+        this.elements.btnLever.addEventListener('touchstart', (e) => this.handleLeverStart(e), { passive: false });
+        document.addEventListener('touchmove', (e) => this.handleLeverMove(e), { passive: false });
+        document.addEventListener('touchend', () => this.handleLeverEnd());
+    }
 
-    // 7. Initial Render
-    
-    // Generate a visual "starting" grid without doing a logical spin
-    const initialGrid = RngService.generateGrid(config);
-    renderGrid(initialGrid, false);
-    updateDisplays();
-});
+    /**
+     * Renders the initial grid state.
+     */
+    initialRender() {
+        const initialGrid = RngService.generateGrid(this.config);
+        this.renderGrid(initialGrid, false);
+        this.updateDisplays();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => new SlotMachineUI());

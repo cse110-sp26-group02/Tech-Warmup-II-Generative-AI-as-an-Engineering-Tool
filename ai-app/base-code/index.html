@@ -17,12 +17,12 @@
         </header>
 
         <!-- Live Status Panel for screen readers and real-time updates -->
-        <section class="status-panel" aria-live="polite" aria-atomic="true">
+        <div class="status-panel" aria-live="polite" aria-atomic="true">
             <div id="status-message">Welcome to the Slot Machine! Place your bet and spin to win.</div>
-        </section>
+        </div>
 
         <!-- Display Panel: Shows player's current balance, bet, and multiplier -->
-        <section class="display-panel" aria-label="Game Information">
+        <div class="display-panel" aria-label="Game Information">
             <div class="info-group">
                 <span id="credit-label">Credit Balance:</span>
                 <span id="credit-display" aria-labelledby="credit-label" role="status">0</span>
@@ -39,10 +39,10 @@
                 <span id="bet-value-label">Bet Per Spin:</span>
                 <span id="bet-value-info" aria-labelledby="bet-value-label" role="status">10</span>
             </div>
-        </section>
+        </div>
 
         <!-- Reels Grid Container: 5x3 grid populated dynamically via JS -->
-        <section class="reels-container" aria-label="Slot Machine Reels">
+        <div class="reels-container" aria-label="Slot Machine Reels">
             <div id="reels-grid" class="grid-display" role="grid" aria-label="5 by 3 symbol grid">
                 <!-- Each cell will be created dynamically with structure:
                      <div class="reel-cell" role="gridcell">
@@ -52,10 +52,10 @@
             </div>
             <!-- Overlay for reel spin animations -->
             <div id="animation-overlay" class="animation-overlay"></div>
-        </section>
+        </div>
 
         <!-- Controls Panel: Interaction elements for the player -->
-        <section class="controls-panel" aria-label="Game Controls">
+        <div class="controls-panel" aria-label="Game Controls">
             <div class="bet-control">
                 <label for="bet-amount">Bet Amount:</label>
                 <input type="range" id="bet-amount" min="1" max="100" value="10" aria-label="Select bet amount from 1 to 100" aria-valuenow="10">
@@ -74,11 +74,11 @@
                 <button id="btn-add-credits" class="btn-secondary" data-action="add-credits">Add Credits</button>
                 <button id="btn-cashout" class="btn-secondary" data-action="cashout">Cash Out</button>
             </div>
-        </section>
+        </div>
 
         <!-- Results Panel: Modal-style display hidden by default -->
         <section id="results-panel" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="results-title">
-            <h1 id="results-title">Spin Results</h1>
+            <h2 id="results-title">Spin Results</h2>
             <div class="result-details">
                 <p>Payout: <span id="payout-display" role="status">0</span></p>
                 <p>Scatters: <span id="scatter-display" role="status">0</span></p>
