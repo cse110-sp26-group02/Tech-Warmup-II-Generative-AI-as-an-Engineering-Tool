@@ -1,11 +1,11 @@
 # Tech-Warmup-II-Generative-AI-as-an-Engineering-Tool
 Model:
 
-gemini-3.1-pro-preview
+`gemini-3.1-pro-preview`
 
 Harness:
 
-Gemini CLI
+`Gemini CLI`
 
 ## Setup
 
