@@ -114,21 +114,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cell = document.createElement('div');
                 cell.className = 'reel-cell';
                 cell.setAttribute('role', 'gridcell');
+                cell.dataset.reelIdx = reelIdx;
                 
                 const symbolStr = gridData[rowIdx][reelIdx];
-                const span = document.createElement('span');
-                span.className = 'symbol';
-                span.textContent = symbolStr;
+                const img = document.createElement('img');
+                img.className = 'symbol-img symbol';
+                img.alt = symbolStr;
+                
+                const symbolMap = {
+                    'CHERRY': 'cherry.png',
+                    'WILD': '1.jpg',
+                    'SCATTER': '2.jpg',
+                    'BONUS': '3.jpg',
+                    'HELMET': '4.jpg',
+                    'SWORD': 'sword.png',
+                    'COIN': 'coin.png',
+                    'VASE': 'jar.png'
+                };
+                
+                img.src = `./assets/${symbolMap[symbolStr]}`;
+                img.style.width = '80%';
+                img.style.height = '80%';
+                img.style.objectFit = 'contain';
                 
                 // Add specific styling class based on symbol type
                 if (symbolStr === 'WILD') {
-                    span.classList.add('symbol-wild');
+                    img.classList.add('symbol-wild');
                 } else if (symbolStr === 'SCATTER') {
-                    span.classList.add('symbol-scatter');
+                    img.classList.add('symbol-scatter');
                 } else if (['HELMET', 'SWORD'].includes(symbolStr)) {
-                    span.classList.add('symbol-high');
+                    img.classList.add('symbol-high');
                 } else {
-                    span.classList.add('symbol-low');
+                    img.classList.add('symbol-low');
                 }
 
                 // If this is a winning render, we could selectively highlight here.
@@ -137,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cell.classList.add('win-highlight');
                 }
 
-                cell.appendChild(span);
+                cell.appendChild(img);
                 elements.reelsGrid.appendChild(cell);
             }
         }
@@ -179,9 +196,13 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.spinIndicator.classList.remove('hidden');
         setStatus('Spinning...');
 
-        // Add blur class to all existing symbols to simulate motion
+        // Add spinning class and animation delay to simulate staggered motion
         const cells = elements.reelsGrid.querySelectorAll('.reel-cell');
-        cells.forEach(cell => cell.classList.add('spinning'));
+        cells.forEach(cell => {
+            const reelIdx = cell.dataset.reelIdx || 0;
+            cell.style.animationDelay = `${reelIdx * 0.15}s`;
+            cell.classList.add('spinning');
+        });
 
         // Calculate spin duration based on power (inverse relation: harder pull = faster/shorter spin)
         // Base time 1.5s, max power reduces it by up to 0.5s
