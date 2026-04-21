@@ -144,7 +144,131 @@ class SlotMachineState {
     }
 }
 
+const UINT32_MAX_PLUS_ONE = 4294967296;
+
+/**
+ * Random Number Generator Service using CSPRNG.
+ */
+class RngService {
+    /**
+     * Gets a cryptographically secure random 32-bit unsigned integer.
+     * @returns {number} Random 32-bit unsigned integer.
+     */
+    static getUint32() {
+        const randomBuffer = new Uint32Array(1);
+        globalThis.crypto.getRandomValues(randomBuffer);
+        return randomBuffer[0];
+    }
+
+    /**
+     * Generates a random integer between 0 (inclusive) and max (exclusive) with uniform distribution.
+     * @param {number} max - The upper bound (exclusive).
+     * @returns {number} The random number.
+     */
+    static getRandomInteger(max) {
+        if (max <= 0) {
+            return 0;
+        }
+        
+        const limit = UINT32_MAX_PLUS_ONE - (UINT32_MAX_PLUS_ONE % max);
+        let randomValue = RngService.getUint32();
+        
+        while (randomValue >= limit) {
+            randomValue = RngService.getUint32();
+        }
+        
+        return randomValue % max;
+    }
+
+    /**
+     * Selects a random symbol based on weighted probabilities.
+     * @param {SymbolWeightedMap} symbolWeightedMap - Map of symbols to weights.
+     * @returns {string} The selected symbol.
+     */
+    static getRandomSymbol(symbolWeightedMap) {
+        const entries = Object.entries(symbolWeightedMap);
+        let totalWeight = 0;
+        
+        for (let index = 0; index < entries.length; index++) {
+            totalWeight += entries[index][1];
+        }
+        
+        const randomValue = RngService.getRandomInteger(totalWeight);
+        let currentWeight = 0;
+        
+        for (let index = 0; index < entries.length; index++) {
+            currentWeight += entries[index][1];
+            if (randomValue < currentWeight) {
+                return entries[index][0];
+            }
+        }
+        
+        return entries[0][0];
+    }
+
+    /**
+     * Generates a 2D result grid based on configuration.
+     * @param {SlotMachineConfig} config - The slot machine configuration.
+     * @returns {Array<Array<string>>} The generated grid.
+     */
+    static generateGrid(config) {
+        const grid = [];
+        for (let rowIdx = 0; rowIdx < config.rows; rowIdx++) {
+            const row = [];
+            for (let reelIdx = 0; reelIdx < config.reels; reelIdx++) {
+                const symbol = RngService.getRandomSymbol(config.symbolWeightedMap);
+                row.push(symbol);
+            }
+            grid.push(row);
+        }
+        return grid;
+    }
+}
+
+/**
+ * Engine to handle slot machine execution.
+ */
+class SlotMachineEngine {
+    /**
+     * Initializes the engine with config and state.
+     * @param {SlotMachineConfig} config - The slot machine configuration.
+     * @param {SlotMachineState} state - The game state.
+     */
+    constructor(config, state) {
+        /**
+         * @type {SlotMachineConfig}
+         */
+        this.config = config;
+        
+        /**
+         * @type {SlotMachineState}
+         */
+        this.state = state;
+    }
+
+    /**
+     * Executes a single spin.
+     * @returns {Array<Array<string>>} The spin result grid.
+     * @throws {Error} If balance is insufficient.
+     */
+    spin() {
+        if (this.state.creditBalance < this.state.currentBet) {
+            throw new Error('Insufficient balance');
+        }
+        
+        const newBalance = this.state.creditBalance - this.state.currentBet;
+        this.state.setCreditBalance(newBalance);
+        
+        const newGrid = RngService.generateGrid(this.config);
+        this.state.setSpinResult(newGrid);
+        
+        return newGrid;
+    }
+}
+
 module.exports = {
     SlotMachineConfig,
-    SlotMachineState
+    SlotMachineState,
+    RngService,
+    SlotMachineEngine
 };
