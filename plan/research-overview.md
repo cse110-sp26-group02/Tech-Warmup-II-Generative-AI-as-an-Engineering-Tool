@@ -1,17 +1,16 @@
 # Research Overview for AI Slot Machine (Warmup II)
 
-
-## Research Summary
+## Research Summary (Latest)
 
 This document provides a summary of the initial research phase for the "Tech Warmup II: Generative AI as an Engineering Tool? — A De-Risk Activity for Using AI in an SWE Context". We gathered information on various aspects of slot machines, including their design, user experience, and technical components, that will help us in our development process of creating a slot machine of our own using AI. Research artifacts are located in the `raw-research`.
 
-### Definition
+### Definition (Latest)
 *What is a slot machine?*
 
 - Gambling machine that creates a game of chance for its customers
 - A coin-operated (some form of currency) machine that generates random combinations of symbols on a dial where certain combinations wins varying amounts of money for the player
 
-### History and Origin
+### History and Origin (Latest)
 *A brief timeline of the slot machine's evolution.*
 
 - **Late 19th Century:** The precursor to modern slots emerged in the 1890s. Charles Fey's "Liberty Bell" (c. 1887-1895) simplified earlier complex machines with a 3-reel design and automatic payouts.
@@ -19,7 +18,7 @@ This document provides a summary of the initial research phase for the "Tech War
 - **The Video and Digital Age:** The first video slot was developed in 1976. In 1996, WMS Industries introduced "Reel 'Em In," the first machine with a second-screen bonus round.
 - **21st Century & Regulation:** The rise of online casinos prompted the Unlawful Internet Gambling Enforcement Act of 2006 in the US, which restricted banks from processing transactions with online gambling companies.
 
-### Slot Machine Apps & Features
+### Slot Machine Apps & Features (Latest)
 *Summary of common features, mechanics, and popular existing slot machine applications.*
 
 - **Core Mechanics:** The core structure can be 3-reel (classic), 5-reel (modern standard), or grid/cluster-based (no traditional paylines). Paylines are lines where matching symbols result in a win and can be fixed or adjustable. Core symbols include standard low/high-value symbols, Wilds (substitute for other common symbols), and Scatters (trigger bonuses). Autoplay for consecutive spins is also a common feature. Levers back then served the purpose to actually roll the reels but now most slot machines are operated by buttons or are touchscreen.
@@ -28,13 +27,13 @@ This document provides a summary of the initial research phase for the "Tech War
 
 - **Monetization:** Monetization in social slot apps is primarily driven by In-App Purchases (IAP) for in-game currency. Other methods include Rewarded Ads (watch for rewards), VIP/Subscription models for premium benefits, and engagement hooks like Daily/Welcome bonuses to encourage player retention. Competitive Events/tournaments are also used to drive re-engagement.
 
-### Feature Gap Analysis
+### Feature Gap Analysis (Latest)
 *A summary of identified gaps and opportunities based on existing applications.*
 
 - **User Experience Gaps:** Common complaints in existing apps suggest a need for affordable minimum bets, generous free play options, and better winning odds. Players also prefer when minimum bets are based on their level or bankroll rather than changing randomly.
 - **RTP and Jackpots:** While the average RTP for mobile slots is ~95.5%, some popular games like *Mega Moolah* have a lower RTP (~88%) to fund massive progressive jackpots. This indicates a trade-off between frequent small wins and the chance for a huge prize.
 
-### Jargon and Terminology
+### Jargon and Terminology (Outdated)
 *Common terms used in the context of slot machines. [More](./raw-research)*
 
 | Term | Definition |
@@ -55,7 +54,7 @@ This document provides a summary of the initial research phase for the "Tech War
 | Min Bet| Lowest allowed bet per turn/overall
 
 
-### Regulations
+### Regulations (Outdated)
 *A summary of common regulations for slot machines and gambling applications.*
 
 - **RNG Certification:** Machines must use a certified Random Number Generator (RNG) to ensure fair and unpredictable outcomes.
@@ -65,7 +64,7 @@ This document provides a summary of the initial research phase for the "Tech War
 - **Know Your Customer (KYC):** Operators must verify a player's identity, age, and address before allowing them to deposit or withdraw funds.
 - **State Gaming Boards:** Most states have gaming control boards that heavily regulate slot machines. Nevada is the notable exception with fewer restrictions.
 
-### Visual Themes
+### Visual Themes (Latest)
 *Common visual themes for the slot machine.*
 
 - Classic/Retro (fruits, bars)
@@ -88,7 +87,7 @@ This document provides a summary of the initial research phase for the "Tech War
 
 <img src="./raw-research/popculture-theme.jpg" alt="Pop Culture Theme" width="200" />
 
-### User Personas
+### User Personas (Latest)
 *Potential users for slot machine applications. [More](./persona-documents.md)*
 
 **Name:** Bobbert
@@ -122,7 +121,7 @@ This document provides a summary of the initial research phase for the "Tech War
 
 **Dislikes:** He’s an impatient guy, so waiting for stuff will drive his interest off elsewhere, he also doesn’t like when his user data is tracked.
 
-### User Stories
+### User Stories (Outdated)
 *Stories of our potential users describing their connection to slot machines. [More](./user-stories.md)*
 
 - As a **player who just won a jackpot**, I want **to easily share my win to my friends** so that **I can show off my achievement.**
@@ -133,14 +132,14 @@ This document provides a summary of the initial research phase for the "Tech War
 - As a **new player**, I want **an interactive tutorial when I first open the app** so that **I understand how the slot machine works before spending any money.**
 - As a **player who has lost a lot in a session**, I want **the app to detect unusual spending patterns and prompt me with a cooldown or break reminder** so that **I don't make impulsive decisions.**
 
-### Odds/Payout Specifics
+### Odds/Payout Specifics (Latest)
 
 - Gaming machines must have a return of between 85% and 92% over their lifetime. This means that for every dollar bet on a gaming machine, between 85 and 92 cents is returned to gamblers over time (casinos set the upper limit on the return to players).
 
 - The truth is, with gaming machines you only have around a 1 in 7,000,000 chance of winning the top prize (playing maximum lines, ways or patterns).
 
 
-## Team Roster and Contributions
+## Team Roster and Contributions (Latest)
 
 | Team Member | Contribution |
 | --- | --- |
@@ -157,6 +156,6 @@ This document provides a summary of the initial research phase for the "Tech War
 | Sophia Ali | Researched feature gap analysis |
 
 
-## Research Artifacts and More Details
+## Research Artifacts and More Details (Latest)
 
 - **Raw Research Documents:** All detailed research files with extra case studies, sources and specific contributions can be found in the [raw-research](./raw-research/) notably the *Slot Machine Research* pdf file.
