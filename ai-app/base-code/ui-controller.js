@@ -176,39 +176,37 @@ class SlotMachineUI {
     }
 
     /**
-     * Creates an image element for a symbol.
+     * Creates an element for a symbol.
      * @param {string} symbolStr The symbol string.
-     * @returns {HTMLImageElement} The created image element.
+     * @returns {HTMLElement} The created element.
      */
     createSymbolImage(symbolStr) {
-        const img = document.createElement('img');
-        img.className = 'symbol-img symbol';
-        img.alt = symbolStr;
+        const el = document.createElement('div');
+        el.className = 'symbol-icon symbol';
+        el.setAttribute('aria-label', symbolStr);
+        el.setAttribute('role', 'img');
         
         const symbolMap = {
-            'CHERRY': 'cherry.png',
-            'WILD': '1.jpg',
-            'SCATTER': '2.jpg',
-            'BONUS': '3.jpg',
-            'HELMET': '4.jpg',
-            'SWORD': 'sword.png',
-            'COIN': 'coin.png',
-            'VASE': 'jar.png'
+            'CHERRY': '🧪',
+            'WILD': '🐉',
+            'SCATTER': '🧙',
+            'BONUS': '🏰',
+            'HELMET': '🛡️',
+            'SWORD': '⚔️',
+            'COIN': '💰',
+            'VASE': '🍺'
         };
         
-        img.src = `./assets/${symbolMap[symbolStr]}`;
-        img.style.width = '80%';
-        img.style.height = '80%';
-        img.style.objectFit = 'contain';
+        el.textContent = symbolMap[symbolStr] || '❓';
         
-        this.applySymbolClass(img, symbolStr);
+        this.applySymbolClass(el, symbolStr);
         
-        return img;
+        return el;
     }
 
     /**
-     * Applies a CSS class to a symbol image based on its type.
-     * @param {HTMLImageElement} img The image element.
+     * Applies a CSS class to a symbol based on its type.
+     * @param {HTMLElement} img The element.
      * @param {string} symbolStr The symbol string.
      */
     applySymbolClass(img, symbolStr) {
