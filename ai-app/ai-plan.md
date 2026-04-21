@@ -57,7 +57,7 @@ We will follow an incremental, AI-assisted process for building the application.
         -   **JavaScript:** Run `npm run lint` to use ESLint.
 3.  **Log:** Document the results, findings, and any necessary refinements.
 4.  **Commit:** Save the changes to version control with a descriptive message.
-s
+
 ### Process Evolution (new)
 
 Initially, our plan was to develop the application feature by feature, focusing on building the core JavaScript logic in isolation before creating any UI. However, we quickly discovered that debugging and identifying issues in the logic was challenging without a visual interface to interact with.
