@@ -1,0 +1,506 @@
+/* 
+ * Slot Machine Style
+ * Theme: Roman Arena / Ancient Odyssey
+ * Color Palette: Rich Gold, Polished Bronze, Deep Imperial Red, Charcoal/Slate, White Marble, Laurel Green
+ */
+
+/* ==========================================================================
+   CSS Variables
+   ========================================================================== */
+:root {
+    --color-gold-light: #FBE689;
+    --color-gold: #D4AF37;
+    --color-gold-dark: #AA7C11;
+    --color-bronze: #CD7F32;
+    --color-bronze-dark: #804A00;
+    --color-imperial-red: #8B0000;
+    --color-imperial-red-dark: #4A0000;
+    --color-charcoal: #2C2C2C;
+    --color-dark-slate: #151515;
+    --color-marble: #F5F5F0;
+    --color-laurel-green: #4A5D23;
+
+    --font-serif: "Cinzel", "Trajan Pro", "Baskerville", "Times New Roman", serif;
+    --font-sans: "Helvetica Neue", Arial, sans-serif;
+
+    --gradient-gold: linear-gradient(to bottom, var(--color-gold-light), var(--color-gold), var(--color-gold-dark));
+    --gradient-red: linear-gradient(to bottom, #A52A2A, var(--color-imperial-red));
+    --gradient-bronze: linear-gradient(135deg, #B87333, #8B4513, #CD7F32);
+    
+    --shadow-depth: 0 8px 15px rgba(0, 0, 0, 0.6);
+    --shadow-inner: inset 0 0 15px rgba(0, 0, 0, 0.8);
+    --shadow-glow-gold: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+/* ==========================================================================
+   Global Reset & Base
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--color-dark-slate);
+    /* Arena background simulation: dark gradient with a hint of red/sand */
+    background-image: radial-gradient(circle at center, #3E2723 0%, var(--color-dark-slate) 80%);
+    color: var(--color-marble);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ==========================================================================
+   Layout Structure
+   ========================================================================== */
+.slot-machine-container {
+    width: 100%;
+    max-width: 900px;
+    background: var(--color-charcoal);
+    border: 4px solid var(--color-bronze);
+    border-radius: 12px;
+    box-shadow: var(--shadow-depth), 0 0 30px rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    /* Marble accent simulation */
+    background-image: linear-gradient(to bottom, rgba(44, 44, 44, 0.9), rgba(21, 21, 21, 0.95)), 
+                      url('data:image/svg+xml;utf8,<svg opacity="0.05" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3"/></filter><rect width="100" height="100" filter="url(%23n)"/></svg>');
+}
+
+/* ==========================================================================
+   Header & Status
+   ========================================================================== */
+header {
+    text-align: center;
+    border-bottom: 2px solid var(--color-gold-dark);
+    padding-bottom: 10px;
+}
+
+header h1 {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* Gold gradient text */
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+header h2 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-bronze);
+    letter-spacing: 1px;
+}
+
+.status-panel {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--color-gold-light);
+    font-weight: bold;
+    min-height: 24px;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* ==========================================================================
+   Display Panel (Dashboard)
+   ========================================================================== */
+.display-panel {
+    display: flex;
+    justify-content: space-around;
+    background: var(--gradient-red);
+    padding: 15px;
+    border: 3px solid var(--color-gold);
+    border-radius: 8px;
+    box-shadow: inset 0 5px 15px rgba(0,0,0,0.6), var(--shadow-glow-gold);
+}
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-serif);
+}
+
+.info-group span:first-child {
+    font-size: 0.9rem;
+    color: var(--color-gold-light);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+/* Digital Readouts */
+.info-group span[role="status"] {
+    font-size: 1.8rem;
+    font-weight: bold;
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9);
+}
+
+/* ==========================================================================
+   Reels Container & Grid
+   ========================================================================== */
+.reels-container {
+    position: relative;
+    background-color: rgba(20, 20, 20, 0.9);
+    padding: 15px;
+    /* Simulated carved stone / gold inlay border */
+    border: 8px solid;
+    border-image: linear-gradient(45deg, var(--color-gold), var(--color-bronze-dark), var(--color-gold-light), var(--color-gold)) 1;
+    box-shadow: inset 0 0 40px rgba(0,0,0,1);
+    overflow: hidden;
+}
+
+.grid-display {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(3, 100px);
+    gap: 10px;
+    perspective: 1000px;
+}
+
+.reel-cell {
+    background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+    border: 2px solid var(--color-charcoal);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 6px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+.symbol {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    /* Floating depth shadow */
+    filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.8));
+    transition: transform 0.3s ease;
+}
+
+/* Symbol Theming (Fallback if no images are used) */
+.symbol-wild {
+    color: var(--color-gold-light);
+    text-shadow: 0 0 10px var(--color-gold);
+    font-size: 1.8rem;
+}
+
+.symbol-scatter {
+    color: #9370DB; /* Purple/Senator */
+    text-shadow: 0 0 8px #4B0082;
+}
+
+.symbol-high {
+    color: var(--color-imperial-red);
+    text-shadow: 0 0 5px #ff4500;
+}
+
+.symbol-low {
+    color: var(--color-bronze);
+}
+
+.animation-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   Controls Panel & Buttons
+   ========================================================================== */
+.controls-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, var(--color-charcoal), var(--color-dark-slate));
+    border: 2px solid var(--color-bronze-dark);
+    border-radius: 8px;
+}
+
+.bet-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-serif);
+}
+
+.bet-control input[type="range"] {
+    accent-color: var(--color-gold);
+    cursor: pointer;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+}
+
+.management-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Base Button Styles (Embossed gold/stone) */
+button {
+    cursor: pointer;
+    font-family: var(--font-serif);
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 6px;
+    transition: all 0.1s ease-in-out;
+}
+
+button:active {
+    transform: translateY(2px);
+}
+
+.btn-secondary {
+    background: var(--gradient-red);
+    color: var(--color-gold-light);
+    border: 2px solid var(--color-gold);
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 6px rgba(0,0,0,0.6);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(to bottom, var(--color-imperial-red), var(--color-imperial-red-dark));
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.8), var(--shadow-glow-gold);
+}
+
+/* The Spin Button: Large Bronze Shield */
+.btn-primary {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--color-imperial-red), var(--color-imperial-red-dark) 80%);
+    border: 6px solid var(--color-bronze);
+    color: var(--color-gold-light);
+    font-size: 1.5rem;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.9);
+    text-shadow: 1px 2px 3px #000;
+    position: relative;
+}
+
+/* Wreath decoration around the shield */
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: -10px; left: -10px; right: -10px; bottom: -10px;
+    border: 2px dashed var(--color-laurel-green);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.9), 0 0 20px var(--color-imperial-red);
+}
+
+.btn-primary:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.9);
+}
+
+.spin-indicator {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-serif);
+    color: var(--color-gold-light);
+    background: rgba(0,0,0,0.7);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--color-gold);
+}
+
+/* ==========================================================================
+   The Physical Lever
+   ========================================================================== */
+.btn-lever {
+    width: 40px;
+    height: 100px;
+    background: var(--gradient-bronze);
+    border: 2px solid #5C3A21;
+    border-radius: 5px;
+    position: relative;
+    /* Elastic out transition for realistic snap-back */
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: bottom center;
+    box-shadow: -5px 0 10px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.5);
+    text-indent: -9999px; /* Hide text, keep accessible */
+}
+
+/* Lever Arm / Rod */
+.btn-lever::before {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 120px;
+    background: linear-gradient(to right, #666, #999, #444);
+    border-radius: 6px;
+    z-index: -1;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+}
+
+/* Lever Knob (Lion's head / Marble orb) */
+.btn-lever::after {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #FFF7D6, var(--color-gold), var(--color-gold-dark));
+    box-shadow: 0 5px 10px rgba(0,0,0,0.6), inset -2px -2px 10px rgba(0,0,0,0.5);
+    border: 2px solid var(--color-bronze);
+}
+
+/* The Pulling State (added by JS during physical simulation) */
+.btn-lever.pulling {
+    transition: none; /* Disable transition while pulling to follow mouse exactly */
+    /* Transform applied inline by JS based on pull distance */
+}
+
+/* Simulated pull via CSS if JS physics aren't directly rotating it */
+.btn-lever:active {
+    transform: rotateX(45deg) scaleY(0.8);
+    transition: transform 0.1s linear;
+}
+
+/* ==========================================================================
+   Results / Modal Panel (Parchment scroll)
+   ========================================================================== */
+#results-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    background-color: #EEDC9A; /* Parchment color */
+    background-image: url('data:image/svg+xml;utf8,<svg opacity="0.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.1" numOctaves="5"/></filter><rect width="100" height="100" filter="url(%23n)"/></svg>');
+    border: 4px solid var(--color-bronze-dark);
+    border-radius: 4px;
+    box-shadow: inset 0 0 30px #8A6D3B, 0 15px 40px rgba(0,0,0,0.9);
+    padding: 30px;
+    text-align: center;
+    z-index: 100;
+    color: #3E2723; /* Dark brown ink */
+}
+
+#results-panel h3 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #8A6D3B;
+    padding-bottom: 10px;
+    color: var(--color-imperial-red-dark);
+}
+
+.result-details p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 10px 0;
+    font-family: var(--font-serif);
+}
+
+.result-details span {
+    font-size: 1.5rem;
+    color: var(--color-imperial-red);
+}
+
+#btn-close-results {
+    margin-top: 20px;
+    background: var(--color-bronze-dark);
+    border-color: #3E2723;
+}
+
+/* ==========================================================================
+   Animations & Effect Classes
+   ========================================================================== */
+.hidden {
+    display: none !important;
+}
+
+/* Win Highlight - Shimmering gold pulse */
+@keyframes pulse-gold {
+    0% {
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 5px var(--color-gold);
+        border-color: var(--color-gold-dark);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.4), 0 0 25px var(--color-gold-light);
+        border-color: var(--color-gold-light);
+        transform: scale(1.05);
+        z-index: 5;
+    }
+    100% {
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 5px var(--color-gold);
+        border-color: var(--color-gold-dark);
+        transform: scale(1);
+    }
+}
+
+.win-highlight {
+    animation: pulse-gold 1.2s infinite alternate;
+    background: linear-gradient(to bottom, #4a3b10, #1a1a1a);
+}
+
+/* Reel Blur - High speed movement simulation */
+.spinning .symbol {
+    filter: blur(4px);
+    transform: translateY(10px) scaleY(1.5);
+    opacity: 0.8;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+@media (max-width: 768px) {
+    .controls-panel {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .grid-display {
+        grid-template-rows: repeat(3, 70px);
+    }
+    
+    .symbol {
+        font-size: 1.2rem;
+    }
+    
+    .btn-primary {
+        width: 80px;
+        height: 80px;
+        font-size: 1.2rem;
+    }
+}
