@@ -389,7 +389,7 @@ class PaylineEvaluator {
     }
 }
 
-const MIN_SCATTERS_FOR_TRIGGER = 3;
+const MIN_SCATTERS_FOR_TRIGGER = 1;
 const MIN_BONUS_FOR_TRIGGER = 3;
 
 /**

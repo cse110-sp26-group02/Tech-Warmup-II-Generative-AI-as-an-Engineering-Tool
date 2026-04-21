@@ -47,7 +47,10 @@ body {
     min-height: 100vh;
     padding: 40px 20px;
     overflow-x: hidden;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 /* Animated Background */
@@ -69,7 +72,7 @@ body {
 
 /* Floating Embers */
 .embers-container {
-    position: absolute;
+    position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none;
     z-index: 0;
@@ -99,7 +102,7 @@ body {
 
 /* Ambient Smoke */
 .smoke-container {
-    position: absolute;
+    position: fixed;
     bottom: -10%; left: 0; width: 100%; height: 60%;
     pointer-events: none;
     z-index: 0;
@@ -132,7 +135,7 @@ body {
 .slot-machine-container {
     width: 100%;
     max-width: 1050px;
-    margin: 0 auto;
+    margin: auto 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -145,12 +148,11 @@ body {
 .machine-crown {
     width: 95%;
     background: linear-gradient(to bottom, var(--color-wood-medium), var(--color-wood-dark));
-    /* Wood texture */
     background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(0,0,0,0.3) 15px, rgba(0,0,0,0.3) 30px), linear-gradient(to bottom, var(--color-wood-medium), var(--color-wood-dark));
     border: 6px solid var(--color-gold-dark);
     border-bottom: none;
     border-radius: 40px 40px 0 0;
-    padding: 20px 50px;
+    padding: 20px 5% 20px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -171,7 +173,7 @@ body {
 
 header h1 {
     font-family: var(--font-heading);
-    font-size: 3.8rem;
+    font-size: clamp(2rem, 5vw, 3.8rem);
     text-transform: uppercase;
     color: var(--color-gold-light);
     text-shadow: 0 5px 8px rgba(0,0,0,1), 0 0 25px var(--color-gold);
@@ -187,13 +189,14 @@ header h1 {
 
 /* Gems on Crown */
 .gem {
-    width: 45px;
-    height: 45px;
+    width: clamp(25px, 4vw, 45px);
+    height: clamp(25px, 4vw, 45px);
     background: radial-gradient(circle at 35% 35%, #ffffff, var(--color-gem) 50%, #004444 90%);
     border-radius: 50%;
     border: 5px solid var(--color-gold-dark);
     box-shadow: var(--bevel-gold), 0 0 25px var(--color-gem-glow);
     animation: gemPulse 2.5s infinite alternate;
+    flex-shrink: 0;
 }
 
 @keyframes gemPulse {
@@ -211,15 +214,15 @@ header h1 {
 
 /* 3D Pillars */
 .pillar {
-    width: 70px;
+    width: clamp(30px, 6vw, 70px);
     background: linear-gradient(to right, var(--color-wood-dark), var(--color-wood-light) 50%, var(--color-wood-dark));
     border-left: 6px solid var(--color-iron-dark);
     border-right: 6px solid var(--color-iron-dark);
     box-shadow: inset 8px 0 20px rgba(255,255,255,0.1), inset -8px 0 20px rgba(0,0,0,0.9);
     position: relative;
+    flex-shrink: 0;
 }
 
-/* Pillar segments/rivets */
 .pillar::before {
     content: '';
     position: absolute;
@@ -230,7 +233,7 @@ header h1 {
     content: '';
     position: absolute;
     top: 20px; left: 50%; transform: translateX(-50%);
-    width: 15px; height: 100%;
+    width: 20%; height: 100%;
     background-image: radial-gradient(circle at center, var(--color-iron-light) 0%, var(--color-iron-dark) 40%, transparent 50%);
     background-size: 100% 55px;
     background-repeat: repeat-y;
@@ -250,11 +253,12 @@ header h1 {
     border-top: none;
     border-bottom: none;
     position: relative;
+    min-width: 0; /* allows flex children to shrink */
 }
 
 .status-panel {
     text-align: center;
-    font-size: 1.6rem;
+    font-size: clamp(1rem, 2.5vw, 1.6rem);
     color: var(--color-gold-light);
     min-height: 38px;
     text-shadow: 2px 2px 6px black, 0 0 10px var(--color-gold-dark);
@@ -270,15 +274,16 @@ header h1 {
 .display-panel {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
     background: linear-gradient(to bottom, #0a0a0a, #1c1c1c);
     padding: 20px;
     border: 4px solid var(--color-iron-light);
     border-radius: 12px;
     box-shadow: inset 0 8px 25px black, 0 8px 20px rgba(0,0,0,0.8);
     position: relative;
+    gap: 10px;
 }
 
-/* Add corner rivets to display panel */
 .display-panel::after {
     content: '';
     position: absolute;
@@ -302,13 +307,13 @@ header h1 {
     font-size: 1.2rem;
     color: var(--color-parchment);
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     letter-spacing: 2px;
     text-shadow: 1px 1px 2px black;
 }
 
 .info-group span[role="status"] {
-    font-size: 2.6rem;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
     font-weight: bold;
     color: var(--color-gold-light);
     text-shadow: 0 0 15px var(--color-gold), 3px 3px 5px black;
@@ -317,7 +322,7 @@ header h1 {
 
 /* 3D Reels Container */
 .reels-container-wrapper {
-    padding: 20px;
+    padding: clamp(10px, 2vw, 20px);
     background: linear-gradient(135deg, var(--color-wood-dark), var(--color-wood-light), var(--color-wood-dark));
     border-radius: 18px;
     box-shadow: var(--bevel-wood), 0 10px 30px rgba(0,0,0,0.8);
@@ -327,14 +332,13 @@ header h1 {
 .reels-container {
     position: relative;
     background-color: #030303;
-    padding: 15px;
+    padding: clamp(5px, 1.5vw, 15px);
     border: 8px solid var(--color-gold);
     border-radius: 10px;
     box-shadow: inset 0 30px 60px rgba(0,0,0,1), inset 0 -10px 20px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.9);
     overflow: hidden;
 }
 
-/* The curved glass/shadow over the reels */
 .animation-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -352,8 +356,8 @@ header h1 {
 .grid-display {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(3, 120px);
-    gap: 12px;
+    grid-template-rows: repeat(3, clamp(70px, 12vw, 120px));
+    gap: clamp(5px, 1vw, 12px);
 }
 
 .reel-cell {
@@ -367,7 +371,6 @@ header h1 {
     overflow: hidden;
 }
 
-/* Vertical divider lines between reels to simulate mechanical separators */
 .reel-cell::after {
     content: '';
     position: absolute;
@@ -380,7 +383,7 @@ header h1 {
 }
 
 .symbol {
-    font-size: 4.5rem;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
     text-align: center;
     filter: drop-shadow(4px 6px 8px rgba(0,0,0,0.9));
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -395,12 +398,11 @@ header h1 {
     position: relative;
 }
 
-.symbol-wild { text-shadow: 0 0 25px var(--color-gold-light); font-size: 5rem; transform: scale(1.1); z-index: 2; }
+.symbol-wild { text-shadow: 0 0 25px var(--color-gold-light); font-size: clamp(3rem, 5.5vw, 5rem); transform: scale(1.1); z-index: 2; }
 .symbol-scatter { filter: drop-shadow(0 0 20px #cc33ff); z-index: 2; }
 .symbol-high { filter: drop-shadow(0 0 15px var(--color-crimson-light)); }
 .symbol-low { filter: drop-shadow(0 0 10px var(--color-gold)); }
 
-/* Dynamic Spin Animation */
 @keyframes reel-spin {
     0% { transform: translateY(-100%) scaleY(1.4); filter: blur(5px); }
     100% { transform: translateY(100%) scaleY(1.4); filter: blur(5px); }
@@ -411,7 +413,6 @@ header h1 {
     opacity: 0.85;
 }
 
-/* Offset animation delay per reel via JS will create a staggered wave effect */
 .spinning[data-reel-idx="0"] .symbol { animation-delay: 0.00s; }
 .spinning[data-reel-idx="1"] .symbol { animation-delay: 0.04s; }
 .spinning[data-reel-idx="2"] .symbol { animation-delay: 0.08s; }
@@ -493,7 +494,9 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px clamp(15px, 4vw, 40px);
     background: linear-gradient(to bottom, var(--color-stone-dark), #111);
     border: 4px solid var(--color-iron-light);
     border-radius: 15px;
@@ -501,7 +504,6 @@ header h1 {
     position: relative;
 }
 
-/* Rivets for controls panel */
 .controls-panel::before {
     content: '';
     position: absolute;
@@ -521,10 +523,13 @@ header h1 {
     gap: 15px;
     font-size: 1.4rem;
     z-index: 1;
+    flex: 1;
+    min-width: 150px;
 }
 
 .bet-control input[type="range"] {
-    width: 180px;
+    width: 100%;
+    max-width: 180px;
     accent-color: var(--color-gold);
     cursor: pointer;
     height: 10px;
@@ -537,19 +542,20 @@ header h1 {
 .action-buttons {
     display: flex;
     align-items: center;
+    justify-content: center;
     position: relative;
     z-index: 1;
+    flex: 1;
 }
 
-/* Enhanced 3D Spin Button */
 .btn-primary {
-    width: 140px;
-    height: 140px;
+    width: clamp(100px, 15vw, 140px);
+    height: clamp(100px, 15vw, 140px);
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, var(--color-crimson-light), var(--color-crimson) 55%, var(--color-crimson-dark));
-    border: 10px solid var(--color-gold);
+    border: 8px solid var(--color-gold);
     color: var(--color-gold-light);
-    font-size: 2.6rem;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
     font-family: var(--font-heading);
     box-shadow: 0 20px 30px rgba(0,0,0,1), inset 0 -15px 25px rgba(0,0,0,0.6), inset 0 15px 25px rgba(255,255,255,0.4);
     text-shadow: 3px 4px 6px black;
@@ -581,14 +587,16 @@ header h1 {
     flex-direction: column;
     gap: 18px;
     z-index: 1;
+    flex: 1;
+    min-width: 150px;
 }
 
 .btn-secondary {
     background: linear-gradient(to bottom, var(--color-iron-light), var(--color-iron));
     color: var(--color-gold-light);
     border: 3px solid var(--color-iron-dark);
-    padding: 14px 28px;
-    font-size: 1.2rem;
+    padding: 10px 15px;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
     border-radius: 8px;
     box-shadow: inset 0 3px 8px rgba(255,255,255,0.2), 0 6px 12px rgba(0,0,0,0.9);
     text-shadow: 2px 2px 4px black;
@@ -596,6 +604,7 @@ header h1 {
     cursor: pointer;
     transition: all 0.1s ease;
     outline: none;
+    width: 100%;
 }
 
 .btn-secondary:hover {
@@ -612,7 +621,7 @@ header h1 {
 
 .spin-indicator {
     position: absolute;
-    top: -60px;
+    top: -50px;
     left: 50%;
     transform: translateX(-50%);
     color: var(--color-gold-light);
@@ -631,13 +640,13 @@ header h1 {
     100% { opacity: 1; box-shadow: 0 8px 20px rgba(0,0,0,0.9), 0 0 20px var(--color-gold); }
 }
 
-/* Results Panel (Parchment scroll) */
+/* Results Panel */
 #results-panel {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 85%;
+    width: 90%;
     max-width: 550px;
     background-color: var(--color-parchment);
     background-image: 
@@ -646,7 +655,7 @@ header h1 {
     border: 10px solid var(--color-wood-medium);
     border-radius: 5px;
     box-shadow: 0 40px 80px rgba(0,0,0,1), 0 0 150px rgba(0,0,0,0.9);
-    padding: 50px;
+    padding: clamp(20px, 5vw, 50px);
     text-align: center;
     z-index: 100;
     color: var(--color-ink);
@@ -667,8 +676,8 @@ header h1 {
 
 #results-panel h2 {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
-    margin-bottom: 30px;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    margin-bottom: 20px;
     border-bottom: 5px double var(--color-crimson);
     padding-bottom: 15px;
     color: var(--color-crimson);
@@ -676,32 +685,32 @@ header h1 {
 }
 
 .result-details p {
-    font-size: 1.8rem;
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
     font-weight: bold;
-    margin: 18px 0;
+    margin: 15px 0;
 }
 
 .result-details span {
-    font-size: 2.6rem;
+    font-size: clamp(2rem, 4vw, 2.6rem);
     color: var(--color-wood-dark);
     text-shadow: 1px 1px 0px rgba(255,255,255,0.6);
 }
 
 #btn-close-results {
-    margin-top: 35px;
+    margin-top: 25px;
     background: var(--color-wood-dark);
     color: var(--color-parchment);
     border-color: var(--color-gold);
     font-size: 1.5rem;
     padding: 12px 35px;
     border-width: 3px;
+    width: auto;
 }
 
 .hidden {
     display: none !important;
 }
 
-/* Animations */
 @keyframes pulse-win {
     0% {
         box-shadow: inset 0 0 20px rgba(0,0,0,1), inset 0 0 15px var(--color-gold);
@@ -725,52 +734,38 @@ header h1 {
     animation: pulse-win 1s infinite alternate;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1000px) {
-    .machine-crown { padding: 15px 30px; }
-    header h1 { font-size: 3rem; }
-    .lever-mount { display: none; } /* Hide physical lever on smaller screens, rely on button */
-    .controls-panel { flex-wrap: wrap; justify-content: center; gap: 25px; }
-    .grid-display { grid-template-rows: repeat(3, 100px); gap: 8px; }
-    .symbol { font-size: 3.5rem; }
+/* Multiplier Popup Animation */
+.multiplier-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    background: radial-gradient(circle, var(--color-gold-light), var(--color-gold-dark));
+    color: var(--color-wood-dark);
+    padding: 20px 40px;
+    border-radius: 12px;
+    border: 5px solid var(--color-crimson);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-family: var(--font-heading);
+    font-weight: bold;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.9);
+    box-shadow: 0 0 50px var(--color-gold), inset 0 0 20px rgba(255,255,255,0.7);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    animation: popupBoon 3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-@media (max-width: 600px) {
-    header h1 { font-size: 2.2rem; }
-    .gem { width: 30px; height: 30px; }
-    .pillar { width: 40px; }
-    .display-panel { flex-wrap: wrap; }
-    .info-group { margin: 10px; }
-    .grid-display { grid-template-rows: repeat(3, 80px); }
-    .symbol { font-size: 2.8rem; }
-    .btn-primary { width: 110px; height: 110px; font-size: 1.8rem; border-width: 6px; }
-}/ *   M u l t i p l i e r   P o p u p   A n i m a t i o n   * / 
- . m u l t i p l i e r - p o p u p   { 
-         p o s i t i o n :   a b s o l u t e ; 
-         t o p :   5 0 % ; 
-         l e f t :   5 0 % ; 
-         t r a n s f o r m :   t r a n s l a t e ( - 5 0 % ,   - 5 0 % )   s c a l e ( 0 . 5 ) ; 
-         b a c k g r o u n d :   r a d i a l - g r a d i e n t ( c i r c l e ,   v a r ( - - c o l o r - g o l d - l i g h t ) ,   v a r ( - - c o l o r - g o l d - d a r k ) ) ; 
-         c o l o r :   v a r ( - - c o l o r - w o o d - d a r k ) ; 
-         p a d d i n g :   1 5 p x   3 0 p x ; 
-         b o r d e r - r a d i u s :   1 0 p x ; 
-         b o r d e r :   4 p x   s o l i d   v a r ( - - c o l o r - c r i m s o n ) ; 
-         f o n t - s i z e :   2 . 2 r e m ; 
-         f o n t - f a m i l y :   v a r ( - - f o n t - h e a d i n g ) ; 
-         f o n t - w e i g h t :   b o l d ; 
-         t e x t - s h a d o w :   1 p x   1 p x   0   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 8 ) ; 
-         b o x - s h a d o w :   0   0   4 0 p x   v a r ( - - c o l o r - g o l d ) ,   i n s e t   0   0   1 5 p x   r g b a ( 2 5 5 , 2 5 5 , 2 5 5 , 0 . 5 ) ; 
-         z - i n d e x :   1 0 0 ; 
-         o p a c i t y :   0 ; 
-         p o i n t e r - e v e n t s :   n o n e ; 
-         w h i t e - s p a c e :   n o w r a p ; 
-         a n i m a t i o n :   p o p u p B o o n   3 s   c u b i c - b e z i e r ( 0 . 1 7 5 ,   0 . 8 8 5 ,   0 . 3 2 ,   1 . 2 7 5 )   f o r w a r d s ; 
- } 
- 
- @ k e y f r a m e s   p o p u p B o o n   { 
-         0 %   {   t r a n s f o r m :   t r a n s l a t e ( - 5 0 % ,   - 3 0 % )   s c a l e ( 0 . 5 ) ;   o p a c i t y :   0 ;   } 
-         1 5 %   {   t r a n s f o r m :   t r a n s l a t e ( - 5 0 % ,   - 5 0 % )   s c a l e ( 1 . 2 ) ;   o p a c i t y :   1 ;   b o x - s h a d o w :   0   0   6 0 p x   v a r ( - - c o l o r - g o l d - l i g h t ) ;   } 
-         3 0 %   {   t r a n s f o r m :   t r a n s l a t e ( - 5 0 % ,   - 5 0 % )   s c a l e ( 1 ) ;   o p a c i t y :   1 ;   b o x - s h a d o w :   0   0   3 0 p x   v a r ( - - c o l o r - g o l d ) ;   } 
-         8 0 %   {   t r a n s f o r m :   t r a n s l a t e ( - 5 0 % ,   - 5 0 % )   s c a l e ( 1 ) ;   o p a c i t y :   1 ;   } 
-         1 0 0 %   {   t r a n s f o r m :   t r a n s l a t e ( - 5 0 % ,   - 1 0 0 % )   s c a l e ( 0 . 8 ) ;   o p a c i t y :   0 ;   } 
- }  
- 
+
+@keyframes popupBoon {
+    0% { transform: translate(-50%, -30%) scale(0.5); opacity: 0; }
+    15% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; box-shadow: 0 0 80px var(--color-gold-light); }
+    30% { transform: translate(-50%, -50%) scale(1); opacity: 1; box-shadow: 0 0 40px var(--color-gold); }
+    80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -100%) scale(0.8); opacity: 0; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .lever-mount { display: none; } /* Hide physical lever on smaller screens, rely on button */
+}
