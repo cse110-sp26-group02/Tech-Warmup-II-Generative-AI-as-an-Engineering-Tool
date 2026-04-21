@@ -96,6 +96,47 @@ class SlotMachineState {
          * @type {boolean}
          */
         this.bonusStatus = false;
+
+        /**
+         * Session tracking: Total gold wagered.
+         * @type {number}
+         */
+        this.sessionTotalWagered = 0;
+
+        /**
+         * Session tracking: Total gold won.
+         * @type {number}
+         */
+        this.sessionTotalWon = 0;
+
+        /**
+         * Session tracking: Total bonuses triggered.
+         * @type {number}
+         */
+        this.sessionTotalBonuses = 0;
+    }
+
+    /**
+     * Records a wager in session stats.
+     * @param {number} amount - The bet amount.
+     */
+    recordSessionWager(amount) {
+        this.sessionTotalWagered += amount;
+    }
+
+    /**
+     * Records a win in session stats.
+     * @param {number} amount - The payout amount.
+     */
+    recordSessionWin(amount) {
+        this.sessionTotalWon += amount;
+    }
+
+    /**
+     * Records a bonus in session stats.
+     */
+    recordSessionBonus() {
+        this.sessionTotalBonuses += 1;
     }
 
     /**

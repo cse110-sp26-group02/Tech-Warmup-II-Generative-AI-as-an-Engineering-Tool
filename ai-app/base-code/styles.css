@@ -572,6 +572,13 @@ header h1 {
     transition: transform 0.1s linear;
 }
 
+.results-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
 /* Machine Base */
 .machine-base {
     width: 100%;

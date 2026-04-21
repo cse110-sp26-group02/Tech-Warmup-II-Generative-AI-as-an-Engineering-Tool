@@ -122,13 +122,17 @@
 
         <!-- Results Panel: Modal-style display hidden by default -->
         <section id="results-panel" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="results-title">
-            <h2 id="results-title">Spin Results</h2>
+            <h2 id="results-title">Session Summary</h2>
             <div class="result-details">
-                <p>Spoils: <span id="payout-display" role="status">0</span></p>
-                <p>Scatters: <span id="scatter-display" role="status">0</span></p>
-                <p>Bonuses: <span id="bonus-display" role="status">0</span></p>
+                <p>Total Wagered: <span id="total-wagered-display" role="status">0</span></p>
+                <p>Total Won: <span id="total-won-display" role="status">0</span></p>
+                <p>Net Gain/Loss: <span id="net-gain-display" role="status">0</span></p>
+                <p>Total Bonuses: <span id="total-bonuses-display" role="status">0</span></p>
             </div>
-            <button id="btn-close-results" class="btn-secondary" aria-label="Close Results">Continue</button>
+            <div class="results-actions">
+                <button id="btn-share-results" class="btn-secondary" aria-label="Share Results">Share thy Spoils</button>
+                <button id="btn-close-results" class="btn-secondary" aria-label="Close Results">Continue</button>
+            </div>
         </section>
 
         <!-- Debug Panel: Hidden by default, useful for development -->

@@ -33,7 +33,21 @@ const CONSTANTS = {
     MAX_HISTORY_ITEMS: 20,
     MIN_SCATTERS: 1,
     MIN_BONUSES: 3,
-    BALANCE_POPUP_DURATION: 1200
+    BALANCE_POPUP_DURATION: 1200,
+    CANVAS_WIDTH: 600,
+    CANVAS_HEIGHT: 800,
+    CANVAS_BORDER_OUTER: 20,
+    CANVAS_BORDER_INNER: 35,
+    CANVAS_HEADER_Y: 100,
+    CANVAS_SUBHEADER_Y: 140,
+    CANVAS_STATS_Y: 250,
+    CANVAS_STATS_SPACING: 70,
+    CANVAS_LABEL_X: 80,
+    CANVAS_VALUE_X: 320,
+    CANVAS_FOOTER_Y: 700,
+    CANVAS_LINE_THICK_OUTER: 15,
+    CANVAS_LINE_THICK_INNER: 5,
+    VAL_2: 2
 };
 
 /**
@@ -106,12 +120,14 @@ class SlotMachineUI {
             btnAddCredits: document.getElementById('btn-add-credits'),
             btnCashout: document.getElementById('btn-cashout'),
             resultsPanel: document.getElementById('results-panel'),
-            payoutDisplay: document.getElementById('payout-display'),
-            scatterDisplay: document.getElementById('scatter-display'),
-            bonusDisplay: document.getElementById('bonus-display'),
+            btnShareResults: document.getElementById('btn-share-results'),
             btnCloseResults: document.getElementById('btn-close-results'),
             spinIndicator: document.getElementById('spin-indicator'),
-            historyList: document.getElementById('history-list')
+            historyList: document.getElementById('history-list'),
+            totalWageredDisplay: document.getElementById('total-wagered-display'),
+            totalWonDisplay: document.getElementById('total-won-display'),
+            netGainDisplay: document.getElementById('net-gain-display'),
+            totalBonusesDisplay: document.getElementById('total-bonuses-display')
         };
     }
 
@@ -253,13 +269,20 @@ class SlotMachineUI {
     }
 
     /**
-     * Shows the spin results panel.
-     * @param {Object} result The spin result object.
+     * Shows the spin results panel with session summary.
      */
-    showResults(result) {
-        this.elements.payoutDisplay.textContent = Math.floor(result.payout);
-        this.elements.scatterDisplay.textContent = result.scatters;
-        this.elements.bonusDisplay.textContent = result.bonuses;
+    showResults() {
+        // Session summary
+        const totalWagered = this.state.sessionTotalWagered;
+        const totalWon = this.state.sessionTotalWon;
+        const netGain = totalWon - totalWagered;
+
+        this.elements.totalWageredDisplay.textContent = Math.floor(totalWagered);
+        this.elements.totalWonDisplay.textContent = Math.floor(totalWon);
+        this.elements.netGainDisplay.textContent = (netGain >= 0 ? '+' : '') + Math.floor(netGain);
+        this.elements.netGainDisplay.style.color = netGain >= 0 ? 'var(--color-gold-light)' : '#ff4444';
+        this.elements.totalBonusesDisplay.textContent = this.state.sessionTotalBonuses;
+
         this.elements.resultsPanel.classList.remove('hidden');
         this.elements.resultsPanel.setAttribute('aria-hidden', 'false');
     }
@@ -311,6 +334,13 @@ class SlotMachineUI {
      * @param {Object} result The spin result.
      */
     applySpinResult(result) {
+        // Record session stats
+        this.state.recordSessionWager(this.state.currentBet);
+        this.state.recordSessionWin(result.payout);
+        if (result.bonuses >= CONSTANTS.MIN_BONUSES) {
+            this.state.recordSessionBonus();
+        }
+
         this.state.setCreditBalance(this.state.creditBalance + result.payout);
         this.state.setSpinResult(result.grid);
         this.state.setMultiplierStatus(result.multiplier);
@@ -480,7 +510,10 @@ class SlotMachineUI {
      * Handles cashing out.
      */
     handleCashout() {
-        this.setStatus(`Cashed out ${this.state.creditBalance} credits. Game over.`);
+        this.elements.resultsPanel.querySelector('h2').textContent = "Session Summary";
+        this.showResults();
+        
+        this.setStatus(`Cashed out ${Math.floor(this.state.creditBalance)} credits. Game over.`);
         this.state.setCreditBalance(0);
         this.updateDisplays();
     }
@@ -538,6 +571,145 @@ class SlotMachineUI {
     }
 
     /**
+     * Generates a decorative scroll image of the session spoils using Canvas.
+     * @returns {Promise<Blob>} The image blob.
+     */
+    async generateSpoilsImage() {
+        const canvas = document.createElement('canvas');
+        canvas.width = CONSTANTS.CANVAS_WIDTH;
+        canvas.height = CONSTANTS.CANVAS_HEIGHT;
+        const ctx = canvas.getContext('2d');
+
+        this.drawParchment(ctx, canvas.width, canvas.height);
+        this.drawDecreeHeader(ctx, canvas.width);
+        this.drawDecreeStats(ctx);
+        this.drawDecreeFooter(ctx, canvas.width);
+
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    /**
+     * Draws the parchment background and border.
+     * @param {CanvasRenderingContext2D} ctx - The canvas context.
+     * @param {number} w - Width.
+     * @param {number} h - Height.
+     */
+    drawParchment(ctx, w, h) {
+        ctx.fillStyle = '#e5d1b3';
+        ctx.fillRect(0, 0, w, h);
+
+        const outer = CONSTANTS.CANVAS_BORDER_OUTER;
+        const inner = CONSTANTS.CANVAS_BORDER_INNER;
+
+        ctx.strokeStyle = '#8B6508';
+        ctx.lineWidth = CONSTANTS.CANVAS_LINE_THICK_OUTER;
+        ctx.strokeRect(outer, outer, w - (outer * CONSTANTS.VAL_2), h - (outer * CONSTANTS.VAL_2));
+        
+        ctx.strokeStyle = '#c69b26';
+        ctx.lineWidth = CONSTANTS.CANVAS_LINE_THICK_INNER;
+        ctx.strokeRect(inner, inner, w - (inner * CONSTANTS.VAL_2), h - (inner * CONSTANTS.VAL_2));
+    }
+
+    /**
+     * Draws the header text on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - The canvas context.
+     * @param {number} w - Width.
+     */
+    drawDecreeHeader(ctx, w) {
+        ctx.fillStyle = '#4a0d0d';
+        ctx.font = 'bold 40px Cinzel Decorative, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ROYAL DECREE', w / CONSTANTS.VAL_2, CONSTANTS.CANVAS_HEADER_Y);
+
+        ctx.font = '24px MedievalSharp, cursive';
+        ctx.fillText('of thy Great Fortune', w / CONSTANTS.VAL_2, CONSTANTS.CANVAS_SUBHEADER_Y);
+    }
+
+    /**
+     * Draws the session stats on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - The canvas context.
+     */
+    drawDecreeStats(ctx) {
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#2b1f13';
+        
+        const stats = [
+            { label: '💰 Total Won:', value: `${Math.floor(this.state.sessionTotalWon)} Gold` },
+            { label: '🎲 Total Wagered:', value: `${Math.floor(this.state.sessionTotalWagered)} Gold` },
+            { label: '📈 Net Gain:', value: `${Math.floor(this.state.sessionTotalWon - this.state.sessionTotalWagered)} Gold` },
+            { label: '🏰 Bonuses Found:', value: this.state.sessionTotalBonuses }
+        ];
+
+        stats.forEach((stat, i) => {
+            const y = CONSTANTS.CANVAS_STATS_Y + (i * CONSTANTS.CANVAS_STATS_SPACING);
+            ctx.font = 'bold 28px MedievalSharp, cursive';
+            ctx.fillText(stat.label, CONSTANTS.CANVAS_LABEL_X, y);
+            ctx.font = '28px MedievalSharp, cursive';
+            ctx.fillText(stat.value, CONSTANTS.CANVAS_VALUE_X, y);
+        });
+    }
+
+    /**
+     * Draws the footer text on the canvas.
+     * @param {CanvasRenderingContext2D} ctx - The canvas context.
+     * @param {number} w - Width.
+     */
+    drawDecreeFooter(ctx, w) {
+        ctx.textAlign = 'center';
+        ctx.font = 'italic 22px MedievalSharp, cursive';
+        ctx.fillText('By Order of the Royal Slots', w / CONSTANTS.VAL_2, CONSTANTS.CANVAS_FOOTER_Y);
+    }
+
+    /**
+     * Handles sharing the session results as an image.
+     */
+    async handleShareResults() {
+        const originalText = this.elements.btnShareResults.textContent;
+        this.elements.btnShareResults.textContent = "Forging Decree...";
+
+        try {
+            const blob = await this.generateSpoilsImage();
+            const file = new File([blob], 'royal-spoils.png', { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'My Royal Slots Spoils',
+                    text: 'Behold my fortune from the Royal Slots! 🐉'
+                });
+                this.elements.btnShareResults.textContent = originalText;
+            } else {
+                this.downloadSpoilsImage(blob, originalText);
+            }
+        } catch (err) {
+            console.error('Sharing failed', err);
+            this.setStatus("Thy device cannot share this image.");
+            this.elements.btnShareResults.textContent = originalText;
+        }
+    }
+
+    /**
+     * Helper to download the spoils image.
+     * @param {Blob} blob - Image blob.
+     * @param {string} originalText - Original button text.
+     */
+    downloadSpoilsImage(blob, originalText) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'royal-spoils.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.elements.btnShareResults.textContent = "Decree Downloaded!";
+        setTimeout(() => {
+            this.elements.btnShareResults.textContent = originalText;
+        }, CONSTANTS.POPUP_DURATION);
+    }
+
+    /**
      * Binds all DOM events.
      */
     bindEvents() {
@@ -545,6 +717,7 @@ class SlotMachineUI {
         this.elements.btnSpin.addEventListener('click', () => this.executeSpin(CONSTANTS.DEFAULT_POWER));
         this.elements.btnAddCredits.addEventListener('click', () => this.handleAddCredits());
         this.elements.btnCashout.addEventListener('click', () => this.handleCashout());
+        this.elements.btnShareResults.addEventListener('click', () => this.handleShareResults());
         this.elements.btnCloseResults.addEventListener('click', () => this.hideResults());
 
         this.elements.btnLever.addEventListener('mousedown', (e) => this.handleLeverStart(e));
