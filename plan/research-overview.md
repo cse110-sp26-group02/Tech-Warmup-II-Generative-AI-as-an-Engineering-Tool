@@ -145,13 +145,13 @@ This document provides a summary of the initial research phase for the "Tech War
 | --- | --- |
 | Abdurrahman Syed | Researched user odds/payout specifics |
 | Andrew Le | Researched history and origin |
-| Andre Stransky | Researched terminology and history; added a user-story; visual/spelling/grammatical fixes and logical ordering of content; doc snapshot |
-| Gurnoor Bola | Researched user perspectives; contributed to persona |
+| Andre Stransky | Researched terminology and history; added several user-stories; visual/spelling/grammatical fixes and logical ordering of content; doc snapshots |
+| Gurnoor Bola | Researched user perspectives; contributed to a persona |
 | Jason Wang | Researched history and origin, feature-gap analysis, and definition |
 | Justine Le | Researched user perspectives; added stories |
 | Mani Schabani-Qassri | Researched user perspectives; contributed to personas and stories |
-| Paul Montal | Researched terminology, and regulations |
-| Sahil Dalal | Researched regulations, user stories, terminology, and features |
+| Paul Montal | Researched terminology and regulations |
+| Sahil Dalal | Researched regulations, terminology, and features; added a couple user stories |
 | Scott Pham | Researched terminology and features; added user stories; doc snapshot; consolidation of main content and contributions in MD format |
 | Sophia Ali | Researched feature gap analysis |
 
