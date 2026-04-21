@@ -1,8 +1,8 @@
 # Research Overview for AI Slot Machine (Warmup II)
 
-## Research Summary (Latest)
+## Research Summary
 
-This document provides a summary of the initial research phase for the "Tech Warmup II: Generative AI as an Engineering Tool? — A De-Risk Activity for Using AI in an SWE Context". We gathered information on various aspects of slot machines, including their design, user experience, and technical components, that will help us in our development process of creating a slot machine of our own using AI. Research artifacts are located in the `raw-research`.
+This document provides a summary of the initial research phase for the "Tech Warmup II: Generative AI as an Engineering Tool? — A De-Risk Activity for Using AI in an SWE Context". We gathered information on various aspects of slot machines, including their design, user experience, and technical components, that will help us in our development process of creating a slot machine of our own using AI. Research artifacts are located in the `raw-research`. Some parts may be out-dated relative to the official PDF doc we conducted research in but should cover our core of our findings well. 
 
 ### Definition (Latest)
 *What is a slot machine?*
