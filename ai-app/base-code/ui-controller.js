@@ -47,8 +47,104 @@ const CONSTANTS = {
     CANVAS_FOOTER_Y: 700,
     CANVAS_LINE_THICK_OUTER: 15,
     CANVAS_LINE_THICK_INNER: 5,
-    VAL_2: 2
+    VAL_2: 2,
+    TAVERN_MUSIC_URL: 'https://od.lk/s/MzdfODgyNTI2NjNf/deuslower-medieval-citytavern-ambient-235876.mp3',
+    FIRE_AMBIENCE_URL: 'https://www.soundjay.com/nature_c2026/campfire-1.mp3',
+    SPIN_SFX_URL: 'https://od.lk/s/MzdfODgyNTI2MDJf/Coins_Single_02.mp3',
+    WIN_SFX_URL: 'https://od.lk/s/MzdfODgyNTI2MDFf/Coins_Several_01.mp3',
+    BOON_SFX_URL: 'https://www.soundjay.com/misc_c2026/magic-chime-06.mp3',
+    CASHOUT_SFX_URL: 'https://od.lk/s/MzdfODgyNTI2MzNf/Gems_Single_01.mp3',
+    SFX_DEFAULT_VOLUME: 0.4,
+    BOON_VOLUME: 0.4,
+    SOUND_FEEDBACK_VOLUME: 0.3,
+    BG_MUSIC_VOLUME: 0.1,
+    FIRE_AMBIENCE_VOLUME: 0.05
 };
+
+/**
+ * Handles all game audio effects and music.
+ */
+class SoundManager {
+    /**
+     * Initializes the SoundManager.
+     */
+    constructor() {
+        this.isMuted = false;
+        this.bgMusic = null;
+        this.ambientFire = null;
+        this.initialized = false;
+    }
+
+    /**
+     * Initializes audio on first user interaction.
+     */
+    init() {
+        if (this.initialized) return;
+
+        try {
+            // Background Music
+            this.bgMusic = new Audio(CONSTANTS.TAVERN_MUSIC_URL);
+            this.bgMusic.loop = true;
+            this.bgMusic.volume = CONSTANTS.BG_MUSIC_VOLUME;
+
+            // Ambient Fire
+            this.ambientFire = new Audio(CONSTANTS.FIRE_AMBIENCE_URL);
+            this.ambientFire.loop = true;
+            this.ambientFire.volume = CONSTANTS.FIRE_AMBIENCE_VOLUME;
+
+            if (!this.isMuted) {
+                this.startLoops();
+            }
+
+            this.initialized = true;
+        } catch (err) {
+            console.error("Audio init failed", err);
+        }
+    }
+
+    /**
+     * Starts background loops.
+     */
+    startLoops() {
+        if (!this.bgMusic || !this.ambientFire) return;
+
+        this.bgMusic.play().catch(e => console.log("Music blocked:", e));
+        this.ambientFire.play().catch(e => console.log("Fire blocked:", e));
+    }
+
+    /**
+     * Plays a specific sound effect.
+     * @param {string} url - The URL of the sound.
+     * @param {number} volume - Volume level.
+     */
+    playSfx(url, volume = CONSTANTS.SFX_DEFAULT_VOLUME) {
+        if (this.isMuted) return;
+
+        try {
+            // Create a fresh instance for every SFX to allow overlapping sounds
+            const sfx = new Audio(url);
+            sfx.volume = volume;
+            sfx.play().catch(e => console.log("SFX blocked:", e));
+        } catch (err) {
+            console.error("SFX error:", err);
+        }
+    }
+
+    /**
+     * Toggles mute status.
+     * @returns {boolean} New mute status.
+     */
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        if (this.isMuted) {
+            if (this.bgMusic) this.bgMusic.pause();
+            if (this.ambientFire) this.ambientFire.pause();
+        } else {
+            this.startLoops();
+        }
+        return this.isMuted;
+    }
+}
 
 /**
  * Main UI Controller Class
@@ -59,6 +155,7 @@ class SlotMachineUI {
      */
     constructor() {
         this.isSpinning = false;
+        this.soundManager = new SoundManager();
         this.initConfig();
         this.initElements();
         this.bindEvents();
@@ -119,11 +216,14 @@ class SlotMachineUI {
             btnLever: document.getElementById('btn-lever'),
             btnAddCredits: document.getElementById('btn-add-credits'),
             btnCashout: document.getElementById('btn-cashout'),
+            btnToggleSound: document.getElementById('btn-toggle-sound'),
             resultsPanel: document.getElementById('results-panel'),
             btnShareResults: document.getElementById('btn-share-results'),
             btnCloseResults: document.getElementById('btn-close-results'),
             spinIndicator: document.getElementById('spin-indicator'),
             historyList: document.getElementById('history-list'),
+            welcomeScreen: document.getElementById('welcome-screen'),
+            btnStartGame: document.getElementById('btn-start-game'),
             totalWageredDisplay: document.getElementById('total-wagered-display'),
             totalWonDisplay: document.getElementById('total-won-display'),
             netGainDisplay: document.getElementById('net-gain-display'),
@@ -143,19 +243,38 @@ class SlotMachineUI {
         this.elements.betAmountInput.value = this.state.currentBet;
         this.elements.betValueDisplay.textContent = `Current: ${this.state.currentBet}`;
 
+        this.updateControlStates();
+    }
+
+    /**
+     * Updates the enabled state of buttons and visibility of panels based on balance.
+     */
+    updateControlStates() {
         const canAfford = this.state.creditBalance >= this.state.currentBet;
+        const isOutOfGold = this.state.creditBalance <= 0;
+
         if (!canAfford) {
             this.elements.btnSpin.disabled = true;
             this.elements.btnLever.disabled = true;
-            // Only show results panel when out of gold
-            if (!this.isSpinning) {
-                this.setStatus("Thou art out of gold, Traveler! Replenish thy purse.");
-                this.elements.resultsPanel.classList.remove('hidden');
-                this.elements.resultsPanel.querySelector('h2').textContent = "Empty Purse";
-            }
+            this.handleAffordabilityIssue(isOutOfGold);
         } else if (!this.isSpinning) {
             this.elements.btnSpin.disabled = false;
             this.elements.btnLever.disabled = false;
+        }
+    }
+
+    /**
+     * Handles UI feedback when the player cannot afford the current wager.
+     * @param {boolean} isOutOfGold - Whether the balance is zero.
+     */
+    handleAffordabilityIssue(isOutOfGold) {
+        if (isOutOfGold && !this.isSpinning) {
+            this.setStatus("Thou art out of gold, Traveler! Replenish thy purse.");
+            this.elements.resultsPanel.classList.remove('hidden');
+            this.elements.resultsPanel.querySelector('h2').textContent = "Empty Purse";
+            this.showResults();
+        } else if (!isOutOfGold) {
+            this.setStatus("Thou canst not afford such a wager!");
         }
     }
 
@@ -301,7 +420,10 @@ class SlotMachineUI {
      */
     async executeSpin(power = CONSTANTS.DEFAULT_POWER) {
         if (this.isSpinning || this.state.creditBalance < this.state.currentBet) return;
-        
+
+        await this.soundManager.init();
+        this.soundManager.playSfx(CONSTANTS.SPIN_SFX_URL);
+
         this.prepareForSpin();
 
         const durationMs = CONSTANTS.BASE_SPIN_DURATION - (power * CONSTANTS.POWER_MULTIPLIER);
@@ -339,12 +461,13 @@ class SlotMachineUI {
         this.state.recordSessionWin(result.payout);
         if (result.bonuses >= CONSTANTS.MIN_BONUSES) {
             this.state.recordSessionBonus();
+            this.soundManager.playSfx(CONSTANTS.BOON_SFX_URL, CONSTANTS.BOON_VOLUME);
         }
 
         this.state.setCreditBalance(this.state.creditBalance + result.payout);
         this.state.setSpinResult(result.grid);
         this.state.setMultiplierStatus(result.multiplier);
-        
+
         if (result.scatters >= CONSTANTS.MIN_SCATTERS) {
             this.engine.triggerFreeSpins();
         }
@@ -430,11 +553,15 @@ class SlotMachineUI {
 
         if (result.multiplierTriggered && hasWin) {
             this.showMultiplierPopup(result.multiplier);
+            this.soundManager.playSfx(CONSTANTS.BOON_SFX_URL);
         }
 
         if (hasWin) {
             this.setStatus(`Thy fortune grows! Won ${Math.floor(result.payout)} gold.`);
             this.showBalancePopup(result.payout);
+            if (!result.multiplierTriggered) {
+                this.soundManager.playSfx(CONSTANTS.WIN_SFX_URL);
+            }
         } else {
             this.setStatus('No win this time. Try again!');
         }
@@ -512,11 +639,24 @@ class SlotMachineUI {
     handleCashout() {
         this.elements.resultsPanel.querySelector('h2').textContent = "Session Summary";
         this.showResults();
-        
+
+        this.soundManager.playSfx(CONSTANTS.CASHOUT_SFX_URL);
         this.setStatus(`Cashed out ${Math.floor(this.state.creditBalance)} credits. Game over.`);
         this.state.setCreditBalance(0);
         this.updateDisplays();
     }
+
+    /**
+     * Handles toggling the sound on/off.
+     */
+    handleToggleSound() {
+        const isMuted = this.soundManager.toggleMute();
+        this.elements.btnToggleSound.textContent = isMuted ? "🔇 Sound Off" : "🔊 Sound On";
+        if (!isMuted) {
+            this.soundManager.playSfx(CONSTANTS.WIN_SFX_URL, CONSTANTS.SOUND_FEEDBACK_VOLUME); // Small feedback clink
+        }
+    }
+
 
     /**
      * Handles the start of a lever pull.
@@ -525,6 +665,8 @@ class SlotMachineUI {
     handleLeverStart(e) {
         if (this.isSpinning || this.elements.btnLever.disabled) return;
         e.preventDefault();
+
+        this.soundManager.init(); // Initialize on first interaction
 
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         this.leverPhysics.startPull(clientY, performance.now());
@@ -604,7 +746,7 @@ class SlotMachineUI {
         ctx.strokeStyle = '#8B6508';
         ctx.lineWidth = CONSTANTS.CANVAS_LINE_THICK_OUTER;
         ctx.strokeRect(outer, outer, w - (outer * CONSTANTS.VAL_2), h - (outer * CONSTANTS.VAL_2));
-        
+
         ctx.strokeStyle = '#c69b26';
         ctx.lineWidth = CONSTANTS.CANVAS_LINE_THICK_INNER;
         ctx.strokeRect(inner, inner, w - (inner * CONSTANTS.VAL_2), h - (inner * CONSTANTS.VAL_2));
@@ -632,7 +774,7 @@ class SlotMachineUI {
     drawDecreeStats(ctx) {
         ctx.textAlign = 'left';
         ctx.fillStyle = '#2b1f13';
-        
+
         const stats = [
             { label: '💰 Total Won:', value: `${Math.floor(this.state.sessionTotalWon)} Gold` },
             { label: '🎲 Total Wagered:', value: `${Math.floor(this.state.sessionTotalWagered)} Gold` },
@@ -710,13 +852,36 @@ class SlotMachineUI {
     }
 
     /**
+     * Handles the start of the game from the welcome screen.
+     */
+    async handleStartGame() {
+        this.elements.welcomeScreen.classList.add('hidden');
+        await this.soundManager.init();
+        this.setStatus('Welcome to the Tavern! Spin the reels.');
+    }
+
+    /**
      * Binds all DOM events.
      */
     bindEvents() {
+        this.elements.btnStartGame.addEventListener('click', () => this.handleStartGame());
         this.elements.betAmountInput.addEventListener('input', (e) => this.handleBetInput(e));
-        this.elements.btnSpin.addEventListener('click', () => this.executeSpin(CONSTANTS.DEFAULT_POWER));
-        this.elements.btnAddCredits.addEventListener('click', () => this.handleAddCredits());
-        this.elements.btnCashout.addEventListener('click', () => this.handleCashout());
+        this.elements.btnSpin.addEventListener('click', () => {
+            this.soundManager.init();
+            this.executeSpin(CONSTANTS.DEFAULT_POWER);
+        });
+        this.elements.btnAddCredits.addEventListener('click', () => {
+            this.soundManager.init();
+            this.handleAddCredits();
+        });
+        this.elements.btnCashout.addEventListener('click', () => {
+            this.soundManager.init();
+            this.handleCashout();
+        });
+        this.elements.btnToggleSound.addEventListener('click', () => {
+            this.soundManager.init();
+            this.handleToggleSound();
+        });
         this.elements.btnShareResults.addEventListener('click', () => this.handleShareResults());
         this.elements.btnCloseResults.addEventListener('click', () => this.hideResults());
 

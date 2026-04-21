@@ -28,6 +28,16 @@
         <div class="smoke" style="--s: 1.2; --d: 12s;"></div>
     </div>
 
+    <!-- Welcome Screen -->
+    <section id="welcome-screen" class="welcome-overlay" role="dialog" aria-labelledby="welcome-title">
+        <div class="welcome-content">
+            <h2 id="welcome-title">Welcome, Traveler!</h2>
+            <p>Thou hast entered the Royal Slots Tavern. The King hath granted thee <strong>1,000 Gold Coins</strong> to seek thy fortune.</p>
+            <p>Pull the lever or spin the reels to begin thy journey!</p>
+            <button id="btn-start-game" class="btn-primary">Enter Tavern</button>
+        </div>
+    </section>
+
     <!-- Main wrapper for the slot machine application -->
     <main class="slot-machine-container">
         
@@ -38,6 +48,9 @@
             </div>
             <div id="history-list" class="history-list">
                 <div class="history-empty">No spins yet...</div>
+            </div>
+            <div class="sound-controls">
+                <button id="btn-toggle-sound" class="btn-secondary" aria-label="Toggle Sound">🔊 Sound On</button>
             </div>
         </aside>
 
