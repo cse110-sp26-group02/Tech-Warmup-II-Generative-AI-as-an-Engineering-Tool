@@ -25,11 +25,11 @@ const CONSTANTS = {
     RADIX: 10,
     POPUP_DURATION: 3000,
     MOBILE_BREAKPOINT: 900,
-    LEVER_WIDTH: 70,
-    CENTER_OFFSET: -35,
-    VERTICAL_OFFSET: -20,
-    HEIGHT_PADDING: 80,
-    MAX_SCALE: 0.8
+    LEVER_WIDTH: 60,
+    CENTER_OFFSET: -30,
+    VERTICAL_OFFSET: -50,
+    HEIGHT_PADDING: 120,
+    MAX_SCALE: 0.9
 };
 
 /**
@@ -478,8 +478,8 @@ class SlotMachineUI {
         if (!container) return;
         
         // Fixed base dimensions to stop layout feedback loops
-        const cssWidth = 1050; 
-        const cssHeight = 980;
+        const cssWidth = 960; 
+        const cssHeight = 890;
         const paddingX = 40;
         const paddingY = CONSTANTS.HEIGHT_PADDING; // Increased padding to protect bottom edge
         
