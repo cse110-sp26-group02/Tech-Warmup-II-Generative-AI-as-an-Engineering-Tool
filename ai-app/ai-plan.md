@@ -57,6 +57,14 @@ We will follow an incremental, AI-assisted process for building the application.
         -   **JavaScript:** Run `npm run lint` to use ESLint.
 3.  **Log:** Document the results, findings, and any necessary refinements.
 4.  **Commit:** Save the changes to version control with a descriptive message.
+s
+### Process Evolution (new)
+
+Initially, our plan was to develop the application feature by feature, focusing on building the core JavaScript logic in isolation before creating any UI. However, we quickly discovered that debugging and identifying issues in the logic was challenging without a visual interface to interact with.
+
+We then shifted our strategy to developing multiple features simultaneously to create a more complete and testable application to work with. This approach, however, introduced too many variables at once, making it difficult to pinpoint the source of bugs. It also often introduced linting issues or HTML/CSS validation issues which forced us to prompt Gemini to address these issues separately.
+
+Ultimately, we found a more effective rhythm by reverting to a more incremental approach, but with a key adjustment: we focused on adding just one or two features per prompt. This allowed for manageable, testable steps. Our unit testing strategy was also refined to run tests primarily when JavaScript files were modified, ensuring our core logic remained sound.
 
 ## 4. Development Phases
 

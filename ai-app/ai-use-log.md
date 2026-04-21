@@ -50,12 +50,13 @@ Acknowledge that you have understood these instructions before we proceed to Pha
 - **Goal:** Agent should understand core basic features of app (JS logic)
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 Core Objective: Generate the complete, production-ready JavaScript logic (slot-machine.js) for a highly configurable web-based slot machine. This generation must adhere strictly to the standards defined in .gemini/skills/slot-machine-skill/SKILL.md (Linted, Documented, Tested, Clean). Do not generate HTML or CSS. Assume a DOM structure exists that this script will manipulate.
 Create a robust configuration object or class to define:
     * reels: Integer (5).
     * rows: Integer (3).
     * paylineStructure: String ('fixed')
-    * symbolWeightedMap: An object mapping symbol names (e.g., 'CHERRY', 'WILD', 'SCATTER', 'HIGH_1') to their weighted probability (e.g., Cherry: 100, Wild: 5, Scatter: 10, High_1: 25).
+    * symbolWeightedMap: An object mapping symbol names to their weighted probability.
     * payoutTable: Defines win conditions for matching 3, 4, or 5 symbols on a payline.
 State: Manage game state (credit balance, current bet, current spin result grid, multiplier status, bonus status).
 ```
@@ -83,6 +84,7 @@ State: Manage game state (credit balance, current bet, current spin result grid,
 
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 RNG Engine (Highest Priority):
     * Crucial requirement: DO NOT use simple Math.random(). You must implement or wrap a Cryptographically Secure Pseudo-Random Number Generator (CSPRNG) (using crypto.getRandomValues() in browsers).
     *   Create a dedicated RngService module that guarantees uniform distribution and accurate symbol selection based on the provided weights.
@@ -110,10 +112,10 @@ Spin Execution: Implement spin(). This must:
 - **Goal:** Add logic for Math features, wild symbols, multipliers, bonus symbols
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 * Payline/Cluster Evaluator: Implement logic to evaluate the 2D grid against defined paylines.
-* Wilds: Logic for WILD symbols to substitute for any high or low-value symbol (but typically not Scatters/Bonus).
 * Scatters: Logic that counts SCATTER symbols present anywhere on the grid (ignoring paylines). Triggers (stub out functions): triggerFreeSpins(), triggerMultiplierBase().
-* Multipliers: Implement a multiplier class. If a spin wins and currentMultiplier > 1, the payout must be factored accurately (e.g., Win 100 * 5x = 500 total).
+* Multipliers: Implement a multiplier class. If a spin wins and currentMultiplier > 1, the payout must be factored accurately
 * Bonus Symbols: Logic for triggering special rounds (stub triggerBonusMiniGame()).
 ```
 - **AI Output Summary:**
@@ -137,6 +139,7 @@ Spin Execution: Implement spin(). This must:
 - **Goal:** Generate a working, realistic lever with detailed unit tests
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 * Implement LeverPhysicsEngine. This is a non-trivial simulation, not just a click handler.
 * The logic must accept user interaction data (mousedown/touchstart coordinates, time) and calculate:
 * Pull Velocity/Force: How hard did the user pull?
@@ -163,6 +166,7 @@ Spin Execution: Implement spin(). This must:
 - **Goal:** Start with basic HTML structure, generate a rough layout of the website, route the JS written in previous runs to HTML.
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 Generate a well-structured HTML5 document that serves as the UI/DOM layer for the slot machine. This HTML should:
 1. Be fully accessible and semantic
     - Use proper HTML5 semantic elements (header, main, section, etc.)
@@ -172,16 +176,11 @@ Generate a well-structured HTML5 document that serves as the UI/DOM layer for th
    - Header: Title "Slot Machine Game"
    - Display Panel: Show credit balance, current bet, and multiplier status (read-only)
    - Reels Grid Container: A 5×3 grid to display symbols (will be populated dynamically)
-   - Results Panel: Hidden by default, shows payouts, scatter count, bonus count
-   - Controls Panel: Includes bet slider, spin button, lever button, cash out, add credits button
-   - Status Panel: Live region for game messages and alerts
-   - Debug Panel: Hidden by default, for development use
 3. Element Specifications:
    Display Elements: Use `<span>` with IDs (`#credit-display`, `#bet-display`, `#multiplier-display`, `#payout-display`, `#scatter-display`, `#bonus-display`)
    Bet Slider: `<input type="range">` from 1-100 with ID `#bet-amount`
    Buttons: Use `<button>` elements with data-action attributes (spin, lever, cashout, add-credits)
    Reels Grid: Container with ID `#reels-grid` (individual cells will be added via JavaScript)
-   Results Panel: Modal-style with ID `#results-panel` (initially hidden)
    Status Messages: `<div id="status-message">` for live feedback
 4. Include:
    Proper `<meta>` tags (charset, viewport)
@@ -258,6 +257,7 @@ Fix the following error codes
 - **Goal:** Add spin, bet value display, animation, spin indicator, etc. (more HTML features)
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 Objective
 Update the existing `index.html` file to improve the slot machine game interface by adding missing interactive elements,
 better accessibility features, and clearer visual feedback for game state.
@@ -344,6 +344,7 @@ Location: On the display value spans in the `.display-panel` section
 - **Goal:** We found this [website](https://graphicriver.net/item/rome-slot-game-machine-complete-graphics-pack/61670839) where we found design inspiration. We want to use these images and this medieval theme for our slot machine.
 - **Prompt:**
 ```
+(assisted with AI; specific features)
 Core Objective: Generate a comprehensive style.css for the Slot Machine project based on a "Roman Arena / Ancient Odyssey" theme. Refer to the images as inspiration. This CSS must skin the existing HTML structure without modifying the logic. Adhere strictly to the clean code and modular standards defined above.
 1. Colors:
     * Primary: Rich Gold (#D4AF37) and Polished Bronze.
@@ -675,9 +676,9 @@ Also the multiplier game logic seems to not be working and the pop up animations
 - **Prompt:**
 ```
 The slot machine is still not centered on the screen. It is slightly to the left of the screen.
- Furthermore on the browser you can scroll down, please make it so that the slot machine fits entirely on the center of the screen and that users are not allowed to scroll down (slot machine if fixed).
- There is also a critical issue with the multiplier game logic.
- Upon every spin, the multiplier does pop up now, but it continually does so, for the first 5 spins (i.e it goes from 1x to 2x to 3x) for the first 5 spins.
+Furthermore on the browser you can scroll down, please make it so that the slot machine fits entirely on the center of the screen and that users are not allowed to scroll down (slot machine if fixed).
+There is also a critical issue with the multiplier game logic.
+Upon every spin, the multiplier does pop up now, but it continually does so, for the first 5 spins (i.e it goes from 1x to 2x to 3x) for the first 5 spins.
 Please address this logic and make it so that it is random for when a certain condition and symbols being aligned cause a multiplier to happen.
 ```
 - **AI Output Summary:**
@@ -782,5 +783,135 @@ Furthermore can you run unit tests on the JS files (add more if necessary) to te
   - HTML and CSS validation passed
   - Magic numbers often present when Gemini produces code
   - Theme and style changes did not impact core functionality with the passing of the unit tests
+
+- **Next Steps:**
+  - Slot machine size is too big on smaller browser sizes, so address this issue by making it slightly smaller
+
+---
+### Run #22
+- **Goal:** Accommodate the sizing of the slot machine on a smaller browser size so that it can fit on the screen.
+- **Prompt:**
+```
+Currently the slot machine is just a little too big on some browser sizes.
+It is centered and at a good position but the bottom of the slot machine (where the wager amount and spin button are located) is just a little too much at the bottom of the screen and cuts off very slightly. This only happens on smaller browser sizes and also there is no issue with the top of the slot machine (fully can be seen and fits in the browser, just the bottom of the slot machine).
+Can you make the slot machine slightly smaller and move it up a little to address this.
+```
+- **AI Output Summary:**
+  - Reduced overall size of the slot machine by approximately 10%.
+  - Additionally updated UI controller dynamic scaling logic
+
+- **Analysis & Learnings:**
+  - JS Lint passed
+  - HTML and CSS validation passed
+  - Slot machine was able to recognize problem areas that resulted in sizing problem, updating required areas like the UI controller dynamic scaling logic
+  - Sizing issues were also able to be fixed while the HTML and CSS files still were valid on W3C, indicating that it recognized the rule of no magic numbers
+
+- **Next Steps:**
+  - Fix multiplier game logic so that the user receives more gold.
+  - Also address pop-up issues (multiplier pop-up and summary of win which clutter the screen)
+
+
+---
+### Run #23
+- **Goal:**
+  - Fix multiplier game logic so that the user receives more gold.
+  - Also address pop-up issues (multiplier pop-up and summary of win which clutter the screen) .
+
+- **Prompt:**
+```
+Currently also the multiplier game logic as well as whenever there is a win, which is recognized with the pop-up on the screen, does not change the gold balance of the user.
+That is, the user never wins any gold. Please make it so that the user can win gold on a win (whether it be on a multiplier or not).
+Furthermore, there are two pop-ups that can appear on the screen and make it feel cluttered (the multiplier pop-up and win summary).
+Can you somehow make this not look so cluttered? Perhaps change the win summary, so that it only appears that the player is out of gold, not on every win?\
+If there is a major win, maybe you can add an extra history table on the side that keeps track of the runs/spins?
+Just make the current slot machine more logical and the experience from a user perspective more enjoyable.
+You can add more features, remove or adjust some to do this.
+```
+- **AI Output Summary:**
+  - Added new feature, history table that records each run of the slot machine (win or lose) so that the screen is not cluttered with pop-ups
+  - Recognized errors in removing critical functions that render or execute the functionality of the slot machine which it restored
+
+
+- **Analysis & Learnings:**
+  - Asked to install jdom with npm during session in to try to investigate errors with game not running
+  - On request to add a new feature that has a history of past runs (win or lose), Gemini removed some critical functions that prevented the slot machine from functioning (renderGrid and executeSpin). We had to ask it to restore these functions to make the slot machine functional again during the session
+  - Passed JS linter (requested to run linter)
+  - Passed HTML and CSS validations
+
+
+- **Next Steps:**
+  - Fix cash out screen (currently just shows all 0’s for the stats; wins/spoils, bonuses,etc)
+  - Add option to share results of cash out screen with stats
+
+---
+### Run #24
+- **Goal:**
+  - Fix cash out screen (currently just shows all 0’s for the stats; wins/spoils, bonuses,etc) and add feature to share the stats
+
+- **Prompt:**
+```
+Currently the cash out button just pops up a box that says empty purse and the stats (spoils, scatter, bonuses are all 0).
+Can you make it so that cash out will reveal the stats of the session (overall net gain or loss, bonuses, spoils, main stats)?
+Also remove the “last scatters, last bonuses, etc”. Furthermore on this cash out button screen, have an option to share the screen/screenshot it so that this stats screen can be shown to friends.
+```
+
+- **AI Output Summary:**
+  - Added new feature, history table that records each run of the slot machine (win or lose) so that the screen is not cluttered with pop-ups
+  - Recognized errors in removing critical functions that render or execute the functionality of the slot machine which it restored
+
+
+- **Analysis & Learnings:**
+  - Unlike previous queries to check is JS code passed linter (reduce the high complexity, etc), this request to add a new feature was processed a lot quicker
+  - One request to remove some of the stats that is showed previously, it was able to recognize to not just remove the text but all occurrences of these elements in the app (state variables, etc), displaying some recognition on user purpose
+  - The share stats button initially was functional, however it shared a link to the local app itself, not an image. During the session a prompt to ask it to share an image itself was placed and Gemini correctly did so.
+  - Passed JS linter
+  - Passes HTML and CSS validation
+  - Still passed all JS unit tests
+
+- **Next Steps:**
+  - Add sound for immersion
+  - Add welcome screen
+
+---
+### Run #25
+- **Goal:**
+  - Add sound for immersion
+  - Add welcome screen
+
+- **Prompt:**
+```
+Lastly, I want you to add some sound to this slot machine app. As it is a medieval theme, please choose sound effects or music that best represent this theme.
+You can add on the spin, on a win, a multiplier, on cash out, or even have some background music. You can also add effects that represent the smoke and embers too.
+The goal is immersion and to enhance the quality of the slot machine app.
+Also briefly add a welcome screen at the very beginning too that states given gold in medieval setting
+
+(second attempt to get functional links) The tavern music can only be heard, the other sound links have no sound. Please try again and find mp3 files that have sound for the slot machine.
+```
+
+- **AI Output Summary:**
+- Immersive Audio System
+  - Background ambience of tavern music
+  - Thematic SFX (on spins, multipliers, and cash out interactions)
+- Sound Management
+  - Added toggle sound on/off button
+- Royal Introduction
+  - Upon loading, greeting sign that welcomes users to the “Royal Slots”
+  - Matches 3D aesthetic of slot machine and medieval theme
+
+
+
+- **Analysis & Learnings:**
+  - Attempted to first find sounds in our assets folder. Thought perhaps that we already had custom sounds to use.
+  - Upon finding that there were no sounds in the assets folder, google searched royalty free medieval sound effects to add.
+  - More proactive in using constant variables which was better than before when magic numbers were a consistent issue.
+  - On first attempt, there was only one functional mp3 sound link that was working (could hear sound) which was the background music
+  - It has a hard time searching for outside sources/links that are functional (namely sound files with sound or valid links
+  - Had to ultimately manually find functional sound files to place in code after second attempt
+  - HTML and CSS valid
+  - JS linter initially invalid (did not pass method complexity limit of 5, needed to prompt this to address the issue).
+  - Passes all unit tests
+
+
+
 
 
