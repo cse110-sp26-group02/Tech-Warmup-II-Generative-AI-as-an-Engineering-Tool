@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { SlotMachineConfig, SlotMachineState, RngService, PaylineEvaluator, SlotMachineEngine } = require('./slot-machine.js');
+const { SlotMachineConfig, SlotMachineState, RngService, PaylineEvaluator, SlotMachineEngine, LeverPhysicsEngine } = require('./slot-machine.js');
 
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
@@ -252,6 +252,45 @@ function testSpinExecution() {
     testSpinMultiplier();
 }
 
+const TEST_PULL_THRESHOLD = 100;
+const TEST_START_Y = 10;
+const TEST_PULL_Y = 150;
+const TEST_SHORT_PULL_Y = 50;
+const TEST_TIME_START = 1000;
+const TEST_TIME_END = 1100;
+const POWER_MULTIPLIER_TEST = 5;
+const EXPECTED_POWER = ((TEST_PULL_Y - TEST_START_Y) / (TEST_TIME_END - TEST_TIME_START)) * POWER_MULTIPLIER_TEST;
+const MAX_POWER = 10;
+
+/**
+ * Tests the LeverPhysicsEngine.
+ * @returns {void}
+ */
+function testLeverPhysics() {
+    const physics = new LeverPhysicsEngine(TEST_PULL_THRESHOLD);
+    
+    // Test short pull (not triggered)
+    physics.startPull(TEST_START_Y, TEST_TIME_START);
+    physics.updatePull(TEST_SHORT_PULL_Y);
+    const shortResult = physics.endPull(TEST_TIME_END);
+    
+    assert.strictEqual(shortResult.triggered, false, 'Short pull should not trigger');
+    assert.strictEqual(shortResult.spinPower, 0, 'Short pull power should be 0');
+
+    // Test full pull (triggered)
+    physics.startPull(TEST_START_Y, TEST_TIME_START);
+    physics.updatePull(TEST_PULL_Y);
+    const fullResult = physics.endPull(TEST_TIME_END);
+    
+    let expectedPower = EXPECTED_POWER;
+    if (expectedPower > MAX_POWER) {
+        expectedPower = MAX_POWER;
+    }
+    
+    assert.strictEqual(fullResult.triggered, true, 'Full pull should trigger');
+    assert.strictEqual(fullResult.spinPower, expectedPower, 'Power should match expected calculation');
+}
+
 /**
  * Runs all unit tests.
  * @returns {void}
@@ -262,6 +301,7 @@ function runAllTests() {
     testRngService();
     testEvaluator();
     testSpinExecution();
+    testLeverPhysics();
     console.log('All Architecture & State Management tests passed!');
 }
 

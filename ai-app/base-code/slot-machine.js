@@ -482,10 +482,111 @@ class SlotMachineEngine {
     }
 }
 
+const DEFAULT_MAX_POWER = 10;
+const POWER_MULTIPLIER = 5;
+
+/**
+ * @typedef {Object} LeverReleaseResult
+ * @property {boolean} triggered - Whether the spin was triggered.
+ * @property {number} spinPower - The calculated power of the pull.
+ */
+
+/**
+ * Handles the physics simulation for the slot machine lever.
+ */
+class LeverPhysicsEngine {
+    /**
+     * Initializes the lever physics engine.
+     * @param {number} pullThreshold - Distance required to trigger a spin.
+     */
+    constructor(pullThreshold) {
+        /**
+         * @type {number}
+         */
+        this.pullThreshold = pullThreshold;
+        
+        /**
+         * @type {number}
+         */
+        this.startY = 0;
+        
+        /**
+         * @type {number}
+         */
+        this.currentY = 0;
+        
+        /**
+         * @type {number}
+         */
+        this.startTime = 0;
+        
+        /**
+         * @type {boolean}
+         */
+        this.isPulling = false;
+    }
+
+    /**
+     * Starts the lever pull interaction.
+     * @param {number} startY - The starting Y coordinate.
+     * @param {number} startTime - The timestamp of the start.
+     * @returns {void}
+     */
+    startPull(startY, startTime) {
+        this.startY = startY;
+        this.currentY = startY;
+        this.startTime = startTime;
+        this.isPulling = true;
+    }
+
+    /**
+     * Updates the lever pull interaction.
+     * @param {number} currentY - The current Y coordinate.
+     * @returns {void}
+     */
+    updatePull(currentY) {
+        if (this.isPulling) {
+            this.currentY = currentY;
+        }
+    }
+
+    /**
+     * Ends the lever pull and calculates the result.
+     * @param {number} endTime - The timestamp of the end.
+     * @returns {LeverReleaseResult} The result of the lever release.
+     */
+    endPull(endTime) {
+        if (!this.isPulling) {
+            return { triggered: false, spinPower: 0 };
+        }
+
+        this.isPulling = false;
+        const distance = this.currentY - this.startY;
+        const timeElapsed = endTime - this.startTime;
+
+        if (distance >= this.pullThreshold) {
+            let velocity = 0;
+            if (timeElapsed > 0) {
+                velocity = distance / timeElapsed;
+            }
+            
+            let power = velocity * POWER_MULTIPLIER;
+            if (power > DEFAULT_MAX_POWER) {
+                power = DEFAULT_MAX_POWER;
+            }
+
+            return { triggered: true, spinPower: power };
+        }
+
+        return { triggered: false, spinPower: 0 };
+    }
+}
+
 module.exports = {
     SlotMachineConfig,
     SlotMachineState,
     RngService,
     PaylineEvaluator,
-    SlotMachineEngine
+    SlotMachineEngine,
+    LeverPhysicsEngine
 };
