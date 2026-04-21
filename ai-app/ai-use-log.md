@@ -451,7 +451,8 @@ Each column should have a different animation start time
 - **Goal:** Address lint and HTML validation errors
 - **Prompt:**
 ```
-First fix Eslint issues for javascript files. Also fix w3c html validation errors: Consider using the “h1” element as a top-level heading only — or else use the “headingoffset” attribute (otherwise, all  “h1” elements are treated as top-level headings by many screen readers and other tools).info (W3C_validation), Section lacks heading. Consider using “h2”-“h6” elements to add identifying headings to all sections, or else use a “div” element instead for any cases where no heading is needed.info (W3C_validation)
+First fix Eslint issues for javascript files.
+Also fix w3c html validation errors: Consider using the “h1” element as a top-level heading only — or else use the “headingoffset” attribute (otherwise, all  “h1” elements are treated as top-level headings by many screen readers and other tools).info (W3C_validation), Section lacks heading. Consider using “h2”-“h6” elements to add identifying headings to all sections, or else use a “div” element instead for any cases where no heading is needed.info (W3C_validation)
 ```
 - **AI Output Summary:**
   - Resolved W3C HTML Validation Errors
@@ -475,7 +476,10 @@ First fix Eslint issues for javascript files. Also fix w3c html validation error
 - **Goal:** Work to fix the image/symbols of the slot machine to fit the medieval theme
 - **Prompt:**
 ```
-Currently the layout and visual aesthetic of the slot machine is not desired. You have used some of the images in the assets folder as symbols but some of these images do not fit the theme and are not symbols  themselves. For this next step, please change the layout and visual aesthetic of the slot machine to be medieval. You can use [Image background.jpg] as inspiration. Feel free to remove the current symboled images and the ones in the assets folder and create your own symbols/layout that fits this medieval theme. Remember to uphold CSS validation.
+Currently the layout and visual aesthetic of the slot machine is not desired. You have used some of the images in the assets folder as symbols but some of these images do not fit the theme and are not symbols themselves.
+For this next step, please change the layout and visual aesthetic of the slot machine to be medieval.
+You can use [Image background.jpg] as inspiration. Feel free to remove the current symboled images and the ones in the assets folder and create your own symbols/layout that fits this medieval theme.
+Remember to uphold CSS validation.
 ```
 - **AI Output Summary:**
   - Asset Cleanup
@@ -496,7 +500,10 @@ Currently the layout and visual aesthetic of the slot machine is not desired. Yo
 - **Goal:** Fix aesthetic of slot machine, specifically the container and fonts (try to make more 3D)
 - **Prompt:**
 ```
-For this next step please further try to enhance the layout/aesthetic of this slot machine. The container and fonts right now seem too simple, just a square box with text that says "slot machine game." Please try to make everything more 3D and increase the overall  quality of the slot machine medieval look. If you can somehow add motion to the background, or make the slot machine look and feel more interactive and "alive" please do so. If this means significant changes to the overall layout and organization of the current slot machine code do it even so.
+For this next step please further try to enhance the layout/aesthetic of this slot machine. The container and fonts right now seem too simple, just a square box with text that says "slot machine game."
+Please try to make everything more 3D and increase the overall  quality of the slot machine medieval look.
+If you can somehow add motion to the background, or make the slot machine look and feel more interactive and "alive" please do so.
+If this means significant changes to the overall layout and organization of the current slot machine code do it even so.
 ```
 - **AI Output Summary:**
   - 3D Structural Architecture
@@ -529,7 +536,12 @@ For this next step please further try to enhance the layout/aesthetic of this sl
 
 - **Prompt:**
 ```
-The HTML file now has some validation errors "The “aria-label” attribute must not be specified on any “div” element unless the element has a “role” value other than “caption”, “code”, “deletion”, “emphasis”, “generic”, “insertion”, “paragraph”, “presentation”, “strong”, “subscript”, or “superscript”.error(W3C_validation) Defines a string value that labels the current element. See related aria-labelledby." and "    <div class="bg-animation"></div> "The “aria-label” attribute must not be specified on any “div” element unless the element has a “role” value other than “caption”, “code”, “deletion”, “emphasis”, “generic”, “insertion”, “paragraph”, “presentation”, “strong”, “subscript”, or “superscript”.error(W3C_validation)". Please address these. Furthermore it seems like the background image is barely moving/animation is hardly noticeable. Also still looks pretty low quality in general. Can you add some more effects/details that will enhance this immersive medieval slot machine feel and look. Furthermore the current spin animation seems to not be animated as well (it just blurs and perhaps elongates). Can you fix this spin animation so that the slot machine actually looks like it is moving/spinning too. Again just try to increase the details of the slot machine and make it more medieval and immersive.
+The HTML file now has some validation errors:
+"The “aria-label” attribute must not be specified on any “div” element unless the element has a “role” value other than “caption”, “code”, “deletion”, “emphasis”, “generic”, “insertion”, “paragraph”, “presentation”, “strong”, “subscript”, or “superscript”.error(W3C_validation) Defines a string value that labels the current element. See related aria-labelledby." and "<div class="bg-animation"></div> "The “aria-label” attribute must not be specified on any “div” element unless the element has a “role” value other than “caption”, “code”, “deletion”, “emphasis”, “generic”, “insertion”, “paragraph”, “presentation”, “strong”, “subscript”, or “superscript”.error(W3C_validation)". Please address these.
+Furthermore it seems like the background image is barely moving/animation is hardly noticeable. Also still looks pretty low quality in general. Can you add some more effects/details that will enhance this immersive medieval slot machine feel and look.
+Furthermore the current spin animation seems to not be animated as well (it just blurs and perhaps elongates).
+Can you fix this spin animation so that the slot machine actually looks like it is moving/spinning too.
+Again just try to increase the details of the slot machine and make it more medieval and immersive.
 ```
 - **AI Output Summary:**
   - W3C HTML Validation Fixed
@@ -562,7 +574,12 @@ The HTML file now has some validation errors "The “aria-label” attribute mus
 
 - **Prompt:**
 ```
-I like the animation background adjustments and extra details like the sparks floating in the back too, however now there is a problem of the whole slot machine not being centered on the screen. I notice that whenever I refresh the browser, the entire slot machine moves a little out of place (to the left). In general, though, the slot machine is not aligned with the browser screen. In fact we cannot see the entire  slot machine (the top part is cut off). Please address these aligning issues. I also notice that on a smaller browser screen part more of the slot machine is also cut off. PLease address this. I do like the added effects to the background (red sparks of light, I think it adds to the medieval look), please add more of these kinds of effects, maybe some smoke or something like this to enhance the medieval immersion even more. However, prioritize the alignment issues first.
+I like the animation background adjustments and extra details like the sparks floating in the back too, however now there is a problem of the whole slot machine not being centered on the screen.
+I notice that whenever I refresh the browser, the entire slot machine moves a little out of place (to the left). In general, though, the slot machine is not aligned with the browser screen.
+In fact we cannot see the entire  slot machine (the top part is cut off). Please address these aligning issues.
+I also notice that on a smaller browser screen part more of the slot machine is also cut off. Please address this.
+I do like the added effects to the background (red sparks of light, I think it adds to the medieval look), please add more of these kinds of effects, maybe some smoke or something like this to enhance the medieval immersion even more.
+However, prioritize the alignment issues first.
 ```
 - **AI Output Summary:**
   - Alignment And Screen Cut-Off Fixes
@@ -588,7 +605,9 @@ I like the animation background adjustments and extra details like the sparks fl
 - **Goal:** Address game logic issues of option to continuously add gold. Also add in/fix game logic of multipliers
 - **Prompt:**
 ```
-Currently there is a game logic issue where a player can just press the "add gold" button and repeatedly do so. Please address this critical issue. Perhaps also now focus on game features that will increase entertainment and usability. Add some logic where there are multipliers and if possible show this pop up on the screen as it normally does (increase immersion and fun).
+Currently there is a game logic issue where a player can just press the "add gold" button and repeatedly do so. Please address this critical issue.
+Perhaps also now focus on game features that will increase entertainment and usability.
+Add some logic where there are multipliers and if possible show this pop up on the screen as it normally does (increase immersion and fun).
 ```
 - **AI Output Summary:**
   - Fixed Infinite “Add Gold” Exploit
@@ -620,7 +639,9 @@ Currently there is a game logic issue where a player can just press the "add gol
 
 - **Prompt:**
 ```
-There are issues with the CSS validation, particularly at the end of the css file. Please address this. Also it seems like the slot machine is again not centered, please fix this. Also the multiplier game logic seems to not be working and the pop up animations are not showing, please fix this.
+There are issues with the CSS validation, particularly at the end of the css file. Please address this.
+Also it seems like the slot machine is again not centered, please fix this.
+Also the multiplier game logic seems to not be working and the pop up animations are not showing, please fix this.
 ```
 - **AI Output Summary:**
   - Fixed CSS validation
@@ -653,7 +674,11 @@ There are issues with the CSS validation, particularly at the end of the css fil
 
 - **Prompt:**
 ```
-The slot machine is still not centered on the screen. It is slightly to the left of the screen. Furthermore on the browser you can scroll down, please make it so that the slot machine fits entirely on the center of the screen and that users are not allowed to scroll down (slot machine if fixed). There is also a critical issue with the multiplier game logic. Upon every spin, the multiplier does pop up now, but   it continually does so, for the first 5 spins (i.e it goes from 1x to 2x to 3x) for the first 5 spins. Please address this logic and make it so that it is random for when a certain condition and symbols being aligned cause a multiplier to happen.
+The slot machine is still not centered on the screen. It is slightly to the left of the screen.
+ Furthermore on the browser you can scroll down, please make it so that the slot machine fits entirely on the center of the screen and that users are not allowed to scroll down (slot machine if fixed).
+ There is also a critical issue with the multiplier game logic.
+ Upon every spin, the multiplier does pop up now, but it continually does so, for the first 5 spins (i.e it goes from 1x to 2x to 3x) for the first 5 spins.
+Please address this logic and make it so that it is random for when a certain condition and symbols being aligned cause a multiplier to happen.
 ```
 - **AI Output Summary:**
 - CSS centering and prevented scrolling
@@ -687,7 +712,8 @@ The slot machine is still not centered on the screen. It is slightly to the left
 
 - **Prompt:**
 ```
-You have successfully addressed the scrolling issue however the slot machine is still not centered on the screen, in fact the top part is now cut off again. PLease address this. Furthermore there is an issue with CSS validation: “transform”: The types are incompatible.error(W3C_validation)  A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG. Baseline icon Widely available across major browsers (Baseline since 2015)" Please fix this.
+You have successfully addressed the scrolling issue however the slot machine is still not centered on the screen, in fact the top part is now cut off again. Please address this.
+Furthermore there is an issue with CSS validation: “transform”: The types are incompatible.error(W3C_validation)  A two-dimensional transformation is applied to an element through the 'transform' property. This property contains a list of transform functions similar to those allowed by SVG. Baseline icon Widely available across major browsers (Baseline since 2015)" Please fix this.
 ```
 - **AI Output Summary:**
   - Fixed CSS Validation Error
@@ -699,12 +725,12 @@ You have successfully addressed the scrolling issue however the slot machine is 
     - Multiplier now correctly resets at the very beginning of the game
 
 - **Analysis & Learnings:**
-- It seems that Gemini addresses the queries in the prompt sequentially (i.e whatever problem is first in the prompt, it works on this first)
--   It also seems to consistently struggle with validating CSS or HTML (perhaps because there is no npm command where it can check so within the succession, since we are using W3C)
--   Even though prompt only focused on centering and CSS validation errors, Gemini also worked on multiplier logic (was not addressed)
--   Furthermore, the slot machine is still not centered
--   CSS and HTML valid
--   JS lint valid
+  - It seems that Gemini addresses the queries in the prompt sequentially (i.e whatever problem is first in the prompt, it works on this first)
+  -  It also seems to consistently struggle with validating CSS or HTML (perhaps because there is no npm command where it can check so within the succession, since we are using W3C)
+  -  Even though prompt only focused on centering and CSS validation errors, Gemini also worked on multiplier logic (was not addressed)
+  -  Furthermore, the slot machine is still not centered
+  -  CSS and HTML valid
+  -  JS lint valid
 
 - **Next Steps:**
   - Fix slot machine centering
@@ -715,7 +741,8 @@ You have successfully addressed the scrolling issue however the slot machine is 
 - **Goal:** Fix slot machine centering and validate all files
 - **Prompt:**
 ```
-The slot machine is still not centered (it appears to be slightly more to the top left of the screen). Furthermore upon refreshing the browser as well the slot machine is displaced even more to the top left direction. Please fix this.
+The slot machine is still not centered (it appears to be slightly more to the top left of the screen).
+Furthermore upon refreshing the browser as well the slot machine is displaced even more to the top left direction. Please fix this.
 ```
 - **AI Output Summary:**
   - Fixed CSS validation error
@@ -740,7 +767,8 @@ The slot machine is still not centered (it appears to be slightly more to the to
 - **Goal:** Address JS linter and test unit tests once more
 - **Prompt:**
 ```
-The JS file does not pass the linter (has a magic number), fix this. Furthermore can you run unit tests on the JS files (add more if necessary) to test the core logic of the slot machine.
+The JS file does not pass the linter (has a magic number), fix this.
+Furthermore can you run unit tests on the JS files (add more if necessary) to test the core logic of the slot machine.
 ```
 - **AI Output Summary:**
   - Linter Fix
