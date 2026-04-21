@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { SlotMachineConfig, SlotMachineState, RngService, SlotMachineEngine } = require('./slot-machine.js');
+const { SlotMachineConfig, SlotMachineState, RngService, PaylineEvaluator, SlotMachineEngine } = require('./slot-machine.js');
 
 const REELS_COUNT = 5;
 const ROWS_COUNT = 3;
@@ -30,6 +30,19 @@ const TEST_SPIN_BET = 10;
 const EXPECTED_BALANCE_AFTER_SPIN = 40;
 const INSUFFICIENT_BALANCE = 5;
 
+const PAYOUT_TABLE = {
+    CHERRY: { 
+        [MATCH_3]: CHERRY_PAYOUT_3, 
+        [MATCH_4]: CHERRY_PAYOUT_4, 
+        [MATCH_5]: CHERRY_PAYOUT_5 
+    },
+    WILD: { 
+        [MATCH_3]: WILD_PAYOUT_3, 
+        [MATCH_4]: WILD_PAYOUT_4, 
+        [MATCH_5]: WILD_PAYOUT_5 
+    }
+};
+
 /**
  * Tests the SlotMachineConfig class initialization.
  * @returns {void}
@@ -45,18 +58,7 @@ function testConfiguration() {
             SCATTER: SCATTER_WEIGHT, 
             HIGH_1: HIGH_1_WEIGHT 
         },
-        payoutTable: {
-            CHERRY: { 
-                [MATCH_3]: CHERRY_PAYOUT_3, 
-                [MATCH_4]: CHERRY_PAYOUT_4, 
-                [MATCH_5]: CHERRY_PAYOUT_5 
-            },
-            WILD: { 
-                [MATCH_3]: WILD_PAYOUT_3, 
-                [MATCH_4]: WILD_PAYOUT_4, 
-                [MATCH_5]: WILD_PAYOUT_5 
-            }
-        }
+        payoutTable: PAYOUT_TABLE
     };
 
     const config = new SlotMachineConfig(configData);
@@ -115,7 +117,7 @@ function testRngService() {
         rows: ROWS_COUNT,
         paylineStructure: 'fixed',
         symbolWeightedMap: weights,
-        payoutTable: {}
+        payoutTable: PAYOUT_TABLE
     };
     const config = new SlotMachineConfig(configData);
     const grid = RngService.generateGrid(config);
@@ -126,30 +128,80 @@ function testRngService() {
 }
 
 /**
- * Tests the spin execution logic.
+ * Tests the PaylineEvaluator for payout rules, wilds, and scatters.
  * @returns {void}
  */
-function testSpinExecution() {
+function testEvaluator() {
+    // Basic match
+    const line1 = ['CHERRY', 'CHERRY', 'CHERRY', 'BLANK', 'BLANK'];
+    assert.strictEqual(PaylineEvaluator.evaluateLine(line1, PAYOUT_TABLE), CHERRY_PAYOUT_3, '3 Cherries should payout CHERRY_PAYOUT_3');
+
+    // Wild substitution
+    const line2 = ['CHERRY', 'WILD', 'CHERRY', 'BLANK', 'BLANK'];
+    assert.strictEqual(PaylineEvaluator.evaluateLine(line2, PAYOUT_TABLE), CHERRY_PAYOUT_3, 'Wild should substitute for Cherry');
+
+    // Wild starting
+    const line3 = ['WILD', 'WILD', 'CHERRY', 'CHERRY', 'BLANK'];
+    assert.strictEqual(PaylineEvaluator.evaluateLine(line3, PAYOUT_TABLE), CHERRY_PAYOUT_4, 'Wilds at start should count towards next symbol');
+
+    // Pure wild line (higher payout)
+    const line4 = ['WILD', 'WILD', 'WILD', 'BLANK', 'BLANK'];
+    assert.strictEqual(PaylineEvaluator.evaluateLine(line4, PAYOUT_TABLE), WILD_PAYOUT_3, '3 Wilds should use Wild payout');
+
+    // Grid Evaluation
+    const configData = {
+        reels: REELS_COUNT,
+        rows: ROWS_COUNT,
+        paylineStructure: 'fixed',
+        symbolWeightedMap: { CHERRY: 100 },
+        payoutTable: PAYOUT_TABLE
+    };
+    const config = new SlotMachineConfig(configData);
+    const grid = [
+        ['CHERRY', 'CHERRY', 'CHERRY', 'BLANK', 'BLANK'],
+        ['SCATTER', 'SCATTER', 'SCATTER', 'BLANK', 'BLANK'],
+        ['BONUS', 'BONUS', 'BONUS', 'BLANK', 'BLANK']
+    ];
+
+    const result = PaylineEvaluator.evaluateGrid(grid, config);
+    assert.strictEqual(result.payout, CHERRY_PAYOUT_3, 'Grid payout should equal line 1 payout');
+    assert.strictEqual(result.scatterCount, MATCH_3, 'Should find 3 Scatters');
+    assert.strictEqual(result.bonusCount, MATCH_3, 'Should find 3 Bonuses');
+}
+
+/**
+ * Sets up a test engine.
+ * @returns {SlotMachineEngine} The test engine.
+ */
+function createTestEngine() {
     const configData = {
         reels: REELS_COUNT,
         rows: ROWS_COUNT,
         paylineStructure: 'fixed',
         symbolWeightedMap: { CHERRY: CHERRY_WEIGHT, WILD: WILD_WEIGHT },
-        payoutTable: {}
+        payoutTable: PAYOUT_TABLE
     };
     const config = new SlotMachineConfig(configData);
     const state = new SlotMachineState();
-    
-    const engine = new SlotMachineEngine(config, state);
+    return new SlotMachineEngine(config, state);
+}
+
+/**
+ * Tests base spin logic.
+ * @returns {void}
+ */
+function testBaseSpin() {
+    const engine = createTestEngine();
+    const state = engine.state;
     
     state.setCreditBalance(TEST_SPIN_BALANCE);
     state.setCurrentBet(TEST_SPIN_BET);
     
-    const grid = engine.spin();
+    const result = engine.spin();
     
-    assert.strictEqual(state.creditBalance, EXPECTED_BALANCE_AFTER_SPIN, 'Balance should decrease by bet amount');
-    assert.strictEqual(grid.length, ROWS_COUNT, 'Spin should return a grid with ROWS_COUNT rows');
-    assert.deepStrictEqual(state.currentSpinResultGrid, grid, 'State grid should match returned grid');
+    assert.ok(state.creditBalance >= EXPECTED_BALANCE_AFTER_SPIN, 'Balance should be updated');
+    assert.strictEqual(result.grid.length, ROWS_COUNT, 'Spin should return a grid with ROWS_COUNT rows');
+    assert.deepStrictEqual(state.currentSpinResultGrid, result.grid, 'State grid should match returned grid');
     
     state.setCreditBalance(INSUFFICIENT_BALANCE);
     assert.throws(
@@ -160,6 +212,47 @@ function testSpinExecution() {
 }
 
 /**
+ * Tests multiplier logic during spin.
+ * @returns {void}
+ */
+function testSpinMultiplier() {
+    const engine = createTestEngine();
+    const state = engine.state;
+    
+    state.setCreditBalance(TEST_SPIN_BALANCE);
+    state.setCurrentBet(0); 
+    state.setMultiplierStatus(2); 
+    
+    const mockGrid = [
+        ['CHERRY', 'CHERRY', 'CHERRY', 'BLANK', 'BLANK'],
+        ['BLANK', 'BLANK', 'BLANK', 'BLANK', 'BLANK'],
+        ['BLANK', 'BLANK', 'BLANK', 'BLANK', 'BLANK']
+    ];
+    
+    const originalGenerateGrid = RngService.generateGrid;
+    
+    /**
+     * Mock generator.
+     * @returns {Array<Array<string>>} The mock grid.
+     */
+    RngService.generateGrid = () => mockGrid;
+    
+    const winResult = engine.spin();
+    assert.strictEqual(winResult.payout, CHERRY_PAYOUT_3 * 2, 'Payout should be multiplied by 2');
+    
+    RngService.generateGrid = originalGenerateGrid;
+}
+
+/**
+ * Runs all spin execution tests.
+ * @returns {void}
+ */
+function testSpinExecution() {
+    testBaseSpin();
+    testSpinMultiplier();
+}
+
+/**
  * Runs all unit tests.
  * @returns {void}
  */
@@ -167,6 +260,7 @@ function runAllTests() {
     testConfiguration();
     testState();
     testRngService();
+    testEvaluator();
     testSpinExecution();
     console.log('All Architecture & State Management tests passed!');
 }

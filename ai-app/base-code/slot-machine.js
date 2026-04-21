@@ -226,6 +226,173 @@ class RngService {
 }
 
 /**
+ * @typedef {Object} EvaluationResult
+ * @property {number} payout - The total payout calculated.
+ * @property {number} scatterCount - Number of SCATTER symbols found.
+ * @property {number} bonusCount - Number of BONUS symbols found.
+ */
+
+/**
+ * @typedef {Object} TargetSymbolInfo
+ * @property {string} targetSymbol - The target symbol.
+ * @property {number} wildCount - The number of wild symbols found.
+ */
+
+/**
+ * @typedef {Object} SymbolCounts
+ * @property {number} scatterCount - Number of SCATTER symbols found.
+ * @property {number} bonusCount - Number of BONUS symbols found.
+ */
+
+/**
+ * Evaluates the result grid for payouts, scatters, and bonuses.
+ */
+class PaylineEvaluator {
+    /**
+     * Extracts the target symbol and wild count from a line.
+     * @param {Array<string>} line - The line array.
+     * @returns {TargetSymbolInfo} An object containing targetSymbol and wildCount.
+     */
+    static getTargetSymbol(line) {
+        let targetSymbol = 'WILD';
+        let wildCount = 0;
+
+        for (let index = 0; index < line.length; index++) {
+            if (line[index] === 'WILD') {
+                wildCount++;
+            } else if (line[index] !== 'SCATTER' && line[index] !== 'BONUS') {
+                targetSymbol = line[index];
+                break;
+            } else {
+                break;
+            }
+        }
+        return { targetSymbol, wildCount };
+    }
+
+    /**
+     * Counts the number of consecutive matches for a symbol.
+     * @param {Array<string>} line - The line array.
+     * @param {string} targetSymbol - The symbol to match.
+     * @returns {number} The count of matches.
+     */
+    static countMatches(line, targetSymbol) {
+        let matchCount = 0;
+        for (let index = 0; index < line.length; index++) {
+            if (line[index] === targetSymbol || line[index] === 'WILD') {
+                matchCount++;
+            } else {
+                break;
+            }
+        }
+        return matchCount;
+    }
+
+    /**
+     * Calculates the payout for a specific symbol and count.
+     * @param {string} symbol - The symbol.
+     * @param {number} count - The match count.
+     * @param {PayoutTable} payoutTable - The payout table.
+     * @returns {number} The calculated payout.
+     */
+    static getPayout(symbol, count, payoutTable) {
+        if (count > 0 && payoutTable[symbol] && payoutTable[symbol][count]) {
+            return payoutTable[symbol][count];
+        }
+        return 0;
+    }
+
+    /**
+     * Evaluates a single payline to calculate payout.
+     * @param {Array<string>} line - The line of symbols to evaluate.
+     * @param {PayoutTable} payoutTable - The win payout table.
+     * @returns {number} The calculated payout for the line.
+     */
+    static evaluateLine(line, payoutTable) {
+        if (line.length === 0) {
+            return 0;
+        }
+
+        const info = PaylineEvaluator.getTargetSymbol(line);
+        const matchCount = PaylineEvaluator.countMatches(line, info.targetSymbol);
+
+        const targetPayout = PaylineEvaluator.getPayout(info.targetSymbol, matchCount, payoutTable);
+        const wildPayout = PaylineEvaluator.getPayout('WILD', info.wildCount, payoutTable);
+
+        if (wildPayout > targetPayout) {
+            return wildPayout;
+        }
+        
+        return targetPayout;
+    }
+
+    /**
+     * Calculates the total payout across all fixed paylines.
+     * @param {Array<Array<string>>} grid - The symbol grid.
+     * @param {SlotMachineConfig} config - The slot machine configuration.
+     * @returns {number} The total payout.
+     */
+    static calculateGridPayout(grid, config) {
+        if (config.paylineStructure !== 'fixed') {
+            return 0;
+        }
+
+        let totalPayout = 0;
+        for (let rowIdx = 0; rowIdx < config.rows; rowIdx++) {
+            const payline = [];
+            for (let reelIdx = 0; reelIdx < config.reels; reelIdx++) {
+                payline.push(grid[rowIdx][reelIdx]);
+            }
+            totalPayout += PaylineEvaluator.evaluateLine(payline, config.payoutTable);
+        }
+        return totalPayout;
+    }
+
+    /**
+     * Counts the number of special symbols on the grid.
+     * @param {Array<Array<string>>} grid - The symbol grid.
+     * @param {SlotMachineConfig} config - The slot machine configuration.
+     * @returns {SymbolCounts} The counts of scatters and bonuses.
+     */
+    static countSpecialSymbols(grid, config) {
+        let scatterCount = 0;
+        let bonusCount = 0;
+
+        for (let rowIdx = 0; rowIdx < config.rows; rowIdx++) {
+            for (let reelIdx = 0; reelIdx < config.reels; reelIdx++) {
+                if (grid[rowIdx][reelIdx] === 'SCATTER') {
+                    scatterCount++;
+                } else if (grid[rowIdx][reelIdx] === 'BONUS') {
+                    bonusCount++;
+                }
+            }
+        }
+
+        return { scatterCount, bonusCount };
+    }
+
+    /**
+     * Evaluates the entire grid based on config structure.
+     * @param {Array<Array<string>>} grid - The symbol grid.
+     * @param {SlotMachineConfig} config - The slot machine configuration.
+     * @returns {EvaluationResult} Evaluation results including payout, scatter, and bonus counts.
+     */
+    static evaluateGrid(grid, config) {
+        const payout = PaylineEvaluator.calculateGridPayout(grid, config);
+        const counts = PaylineEvaluator.countSpecialSymbols(grid, config);
+
+        return { 
+            payout, 
+            scatterCount: counts.scatterCount, 
+            bonusCount: counts.bonusCount 
+        };
+    }
+}
+
+const MIN_SCATTERS_FOR_TRIGGER = 3;
+const MIN_BONUS_FOR_TRIGGER = 3;
+
+/**
  * Engine to handle slot machine execution.
  */
 class SlotMachineEngine {
@@ -247,8 +414,37 @@ class SlotMachineEngine {
     }
 
     /**
+     * Triggers the free spins feature.
+     * @returns {void}
+     */
+    triggerFreeSpins() {
+        // Stub for free spins logic
+        console.log('Free Spins Triggered!');
+    }
+
+    /**
+     * Triggers a base multiplier increase.
+     * @returns {void}
+     */
+    triggerMultiplierBase() {
+        // Stub for multiplier logic
+        this.state.setMultiplierStatus(this.state.multiplierStatus + 1);
+        console.log('Multiplier Increased!');
+    }
+
+    /**
+     * Triggers the bonus mini-game feature.
+     * @returns {void}
+     */
+    triggerBonusMiniGame() {
+        // Stub for bonus mini-game logic
+        this.state.setBonusStatus(true);
+        console.log('Bonus Mini Game Triggered!');
+    }
+
+    /**
      * Executes a single spin.
-     * @returns {Array<Array<string>>} The spin result grid.
+     * @returns {Object} The result object containing the grid and payout details.
      * @throws {Error} If balance is insufficient.
      */
     spin() {
@@ -262,7 +458,27 @@ class SlotMachineEngine {
         const newGrid = RngService.generateGrid(this.config);
         this.state.setSpinResult(newGrid);
         
-        return newGrid;
+        const evaluation = PaylineEvaluator.evaluateGrid(newGrid, this.config);
+        
+        const finalPayout = evaluation.payout * this.state.multiplierStatus;
+        
+        this.state.setCreditBalance(this.state.creditBalance + finalPayout);
+        
+        if (evaluation.scatterCount >= MIN_SCATTERS_FOR_TRIGGER) {
+            this.triggerFreeSpins();
+            this.triggerMultiplierBase();
+        }
+        
+        if (evaluation.bonusCount >= MIN_BONUS_FOR_TRIGGER) {
+            this.triggerBonusMiniGame();
+        }
+        
+        return {
+            grid: newGrid,
+            payout: finalPayout,
+            scatters: evaluation.scatterCount,
+            bonuses: evaluation.bonusCount
+        };
     }
 }
 
@@ -270,5 +486,6 @@ module.exports = {
     SlotMachineConfig,
     SlotMachineState,
     RngService,
+    PaylineEvaluator,
     SlotMachineEngine
 };
