@@ -4,75 +4,92 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slot Machine Game</title>
-    <!-- External stylesheet for Phase 5 styling -->
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Animated background wrapper -->
+    <div class="bg-animation"></div>
+
     <!-- Main wrapper for the slot machine application -->
     <main class="slot-machine-container">
         
-        <!-- Header Section -->
-        <header>
-            <h1>Slot Machine Game</h1>
-        </header>
-
-        <!-- Live Status Panel for screen readers and real-time updates -->
-        <div class="status-panel" aria-live="polite" aria-atomic="true">
-            <div id="status-message">Welcome to the Slot Machine! Place your bet and spin to win.</div>
+        <!-- 3D Structural Elements -->
+        <div class="machine-crown">
+            <div class="gem gem-left"></div>
+            <header>
+                <h1>Royal Slots</h1>
+            </header>
+            <div class="gem gem-right"></div>
         </div>
 
-        <!-- Display Panel: Shows player's current balance, bet, and multiplier -->
-        <div class="display-panel" aria-label="Game Information">
-            <div class="info-group">
-                <span id="credit-label">Credit Balance:</span>
-                <span id="credit-display" aria-labelledby="credit-label" role="status">0</span>
-            </div>
-            <div class="info-group">
-                <span id="current-bet-label">Current Bet:</span>
-                <span id="bet-display" aria-labelledby="current-bet-label" role="status">0</span>
-            </div>
-            <div class="info-group">
-                <span id="multiplier-label">Multiplier:</span>
-                <span id="multiplier-display" aria-labelledby="multiplier-label" role="status">1x</span>
-            </div>
-            <div class="info-group">
-                <span id="bet-value-label">Bet Per Spin:</span>
-                <span id="bet-value-info" aria-labelledby="bet-value-label" role="status">10</span>
-            </div>
-        </div>
+        <div class="machine-body">
+            <div class="pillar pillar-left"></div>
+            
+            <div class="machine-center">
+                <!-- Live Status Panel for screen readers and real-time updates -->
+                <div class="status-panel" aria-live="polite" aria-atomic="true">
+                    <div id="status-message">Welcome, Traveler! Place thy wager.</div>
+                </div>
 
-        <!-- Reels Grid Container: 5x3 grid populated dynamically via JS -->
-        <div class="reels-container" aria-label="Slot Machine Reels">
-            <div id="reels-grid" class="grid-display" role="grid" aria-label="5 by 3 symbol grid">
-                <!-- Each cell will be created dynamically with structure:
-                     <div class="reel-cell" role="gridcell">
-                         <span class="symbol">CHERRY</span>
-                     </div>
-                -->
-            </div>
-            <!-- Overlay for reel spin animations -->
-            <div id="animation-overlay" class="animation-overlay"></div>
-        </div>
+                <!-- Display Panel: Shows player's current balance, bet, and multiplier -->
+                <div class="display-panel" aria-label="Game Information">
+                    <div class="info-group">
+                        <span id="credit-label">Gold:</span>
+                        <span id="credit-display" aria-labelledby="credit-label" role="status">0</span>
+                    </div>
+                    <div class="info-group">
+                        <span id="current-bet-label">Wager:</span>
+                        <span id="bet-display" aria-labelledby="current-bet-label" role="status">0</span>
+                    </div>
+                    <div class="info-group">
+                        <span id="multiplier-label">Boon:</span>
+                        <span id="multiplier-display" aria-labelledby="multiplier-label" role="status">1x</span>
+                    </div>
+                    <div class="info-group" style="display: none;">
+                        <span id="bet-value-label">Bet Per Spin:</span>
+                        <span id="bet-value-info" aria-labelledby="bet-value-label" role="status">10</span>
+                    </div>
+                </div>
 
-        <!-- Controls Panel: Interaction elements for the player -->
-        <div class="controls-panel" aria-label="Game Controls">
-            <div class="bet-control">
-                <label for="bet-amount">Bet Amount:</label>
-                <input type="range" id="bet-amount" min="1" max="100" value="10" aria-label="Select bet amount from 1 to 100" aria-valuenow="10">
-                <span id="bet-value-display" aria-live="polite">Current: 10</span>
+                <!-- Reels Grid Container: 5x3 grid populated dynamically via JS -->
+                <div class="reels-container-wrapper">
+                    <div class="reels-container" aria-label="Slot Machine Reels">
+                        <div id="reels-grid" class="grid-display" role="grid" aria-label="5 by 3 symbol grid">
+                            <!-- Populated via JS -->
+                        </div>
+                        <!-- Overlay for reel spin animations and 3D curve -->
+                        <div id="animation-overlay" class="animation-overlay"></div>
+                    </div>
+                </div>
             </div>
             
-            <div class="action-buttons">
-                <!-- Virtual lever for physical simulation -->
+            <div class="pillar pillar-right"></div>
+            
+            <!-- The Lever attached to the right side of the machine body -->
+            <div class="lever-mount">
                 <button id="btn-lever" class="btn-lever" data-action="lever" aria-label="Pull Lever">Pull Lever</button>
-                <!-- Standard spin button -->
-                <button id="btn-spin" class="btn-primary" data-action="spin">Spin</button>
-                <div id="spin-indicator" class="spin-indicator hidden" aria-live="polite" aria-atomic="true">Spinning...</div>
             </div>
-            
-            <div class="management-buttons">
-                <button id="btn-add-credits" class="btn-secondary" data-action="add-credits">Add Credits</button>
-                <button id="btn-cashout" class="btn-secondary" data-action="cashout">Cash Out</button>
+        </div>
+
+        <div class="machine-base">
+            <!-- Controls Panel: Interaction elements for the player -->
+            <div class="controls-panel" aria-label="Game Controls">
+                <div class="bet-control">
+                    <label for="bet-amount">Wager Amount:</label>
+                    <input type="range" id="bet-amount" min="1" max="100" value="10" aria-label="Select bet amount from 1 to 100" aria-valuenow="10">
+                    <span id="bet-value-display" aria-live="polite">Current: 10</span>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="btn-spin" class="btn-primary" data-action="spin">SPIN</button>
+                    <div id="spin-indicator" class="spin-indicator hidden" aria-live="polite" aria-atomic="true">Spinning...</div>
+                </div>
+                
+                <div class="management-buttons">
+                    <button id="btn-add-credits" class="btn-secondary" data-action="add-credits">Add Gold</button>
+                    <button id="btn-cashout" class="btn-secondary" data-action="cashout">Cash Out</button>
+                </div>
             </div>
         </div>
 
@@ -80,11 +97,11 @@
         <section id="results-panel" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="results-title">
             <h2 id="results-title">Spin Results</h2>
             <div class="result-details">
-                <p>Payout: <span id="payout-display" role="status">0</span></p>
+                <p>Spoils: <span id="payout-display" role="status">0</span></p>
                 <p>Scatters: <span id="scatter-display" role="status">0</span></p>
                 <p>Bonuses: <span id="bonus-display" role="status">0</span></p>
             </div>
-            <button id="btn-close-results" class="btn-secondary" aria-label="Close Results">Close</button>
+            <button id="btn-close-results" class="btn-secondary" aria-label="Close Results">Continue</button>
         </section>
 
         <!-- Debug Panel: Hidden by default, useful for development -->
