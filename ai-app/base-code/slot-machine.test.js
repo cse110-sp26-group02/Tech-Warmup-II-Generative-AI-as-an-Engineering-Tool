@@ -219,6 +219,9 @@ function testBaseSpin() {
  * Tests multiplier logic during spin.
  * @returns {void}
  */
+/**
+ * Tests the spin multiplier logic.
+ */
 function testSpinMultiplier() {
     const engine = createTestEngine();
     const state = engine.state;
@@ -242,7 +245,10 @@ function testSpinMultiplier() {
     RngService.generateGrid = () => mockGrid;
 
     const originalRandom = Math.random;
-    // Mock Math.random to always return a value that triggers a multiplier and picks the first one (2x)
+    /**
+     * Mock Math.random to always return a value that triggers a multiplier and picks the first one (2x).
+     * @returns {number} Mocked value.
+     */
     Math.random = () => VAL_0;
     
     const winResult = engine.spin();

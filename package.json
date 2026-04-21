@@ -43,6 +43,7 @@
     "is-glob": "^4.0.3",
     "isexe": "^2.0.0",
     "jsdoc-type-pratt-parser": "^7.2.0",
+    "jsdom": "^29.0.2",
     "json-buffer": "^3.0.1",
     "json-schema-traverse": "^0.4.1",
     "json-stable-stringify-without-jsonify": "^1.0.1",

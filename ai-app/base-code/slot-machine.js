@@ -155,9 +155,14 @@ class RngService {
      * @returns {number} Random 32-bit unsigned integer.
      */
     static getUint32() {
-        const randomBuffer = new Uint32Array(1);
-        globalThis.crypto.getRandomValues(randomBuffer);
-        return randomBuffer[0];
+        const cryptoObj = globalThis.crypto || globalThis.msCrypto;
+        if (cryptoObj && cryptoObj.getRandomValues) {
+            const randomBuffer = new Uint32Array(1);
+            cryptoObj.getRandomValues(randomBuffer);
+            return randomBuffer[0];
+        }
+        // Fallback to Math.random if crypto is unavailable
+        return Math.floor(Math.random() * UINT32_MAX_PLUS_ONE);
     }
 
     /**
@@ -451,7 +456,32 @@ class SlotMachineEngine {
     }
 
     /**
-     * Executes a single spin.
+     * Calculates the result of a spin without updating the credit balance.
+     * @returns {Object} The result object containing the grid and payout details.
+     */
+    calculateSpinResult() {
+        const newGrid = RngService.generateGrid(this.config);
+        const evaluation = PaylineEvaluator.evaluateGrid(newGrid, this.config);
+        
+        let currentMultiplier = 1;
+        if (evaluation.payout > 0) {
+            currentMultiplier = this.calculateRandomMultiplier(evaluation.scatterCount);
+        }
+        
+        const finalPayout = evaluation.payout * currentMultiplier;
+
+        return {
+            grid: newGrid,
+            payout: finalPayout,
+            scatters: evaluation.scatterCount,
+            bonuses: evaluation.bonusCount,
+            multiplier: currentMultiplier,
+            multiplierTriggered: currentMultiplier > 1
+        };
+    }
+
+    /**
+     * Executes a single spin, deducting bet and adding payout.
      * @returns {Object} The result object containing the grid and payout details.
      * @throws {Error} If balance is insufficient.
      */
@@ -460,44 +490,26 @@ class SlotMachineEngine {
             throw new Error('Insufficient balance');
         }
         
-        const newBalance = this.state.creditBalance - this.state.currentBet;
-        this.state.setCreditBalance(newBalance);
+        // Deduct bet
+        this.state.setCreditBalance(this.state.creditBalance - this.state.currentBet);
         
-        const newGrid = RngService.generateGrid(this.config);
-        this.state.setSpinResult(newGrid);
+        const result = this.calculateSpinResult();
         
-        const evaluation = PaylineEvaluator.evaluateGrid(newGrid, this.config);
+        this.state.setSpinResult(result.grid);
+        this.state.setMultiplierStatus(result.multiplier);
         
-        let currentMultiplier = 1;
+        // Add payout
+        this.state.setCreditBalance(this.state.creditBalance + result.payout);
         
-        if (evaluation.payout > 0) {
-            currentMultiplier = this.calculateRandomMultiplier(evaluation.scatterCount);
-        }
-        
-        const multiplierTriggered = currentMultiplier > 1;
-        
-        this.state.setMultiplierStatus(currentMultiplier);
-        
-        const finalPayout = evaluation.payout * currentMultiplier;
-        
-        this.state.setCreditBalance(this.state.creditBalance + finalPayout);
-        
-        if (evaluation.scatterCount >= MIN_SCATTERS_FOR_TRIGGER) {
+        if (result.scatters >= MIN_SCATTERS_FOR_TRIGGER) {
             this.triggerFreeSpins();
         }
         
-        if (evaluation.bonusCount >= MIN_BONUS_FOR_TRIGGER) {
+        if (result.bonuses >= MIN_BONUS_FOR_TRIGGER) {
             this.triggerBonusMiniGame();
         }
         
-        return {
-            grid: newGrid,
-            payout: finalPayout,
-            scatters: evaluation.scatterCount,
-            bonuses: evaluation.bonusCount,
-            multiplier: currentMultiplier,
-            multiplierTriggered: multiplierTriggered
-        };
+        return result;
     }
 }
 
@@ -601,11 +613,13 @@ class LeverPhysicsEngine {
     }
 }
 
-module.exports = {
-    SlotMachineConfig,
-    SlotMachineState,
-    RngService,
-    PaylineEvaluator,
-    SlotMachineEngine,
-    LeverPhysicsEngine
-};
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        SlotMachineConfig,
+        SlotMachineState,
+        RngService,
+        PaylineEvaluator,
+        SlotMachineEngine,
+        LeverPhysicsEngine
+    };
+}

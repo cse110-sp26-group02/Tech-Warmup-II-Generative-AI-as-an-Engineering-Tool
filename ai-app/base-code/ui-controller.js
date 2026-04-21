@@ -29,7 +29,11 @@ const CONSTANTS = {
     CENTER_OFFSET: -30,
     VERTICAL_OFFSET: -50,
     HEIGHT_PADDING: 120,
-    MAX_SCALE: 0.9
+    MAX_SCALE: 0.9,
+    MAX_HISTORY_ITEMS: 20,
+    MIN_SCATTERS: 1,
+    MIN_BONUSES: 3,
+    BALANCE_POPUP_DURATION: 1200
 };
 
 /**
@@ -106,7 +110,8 @@ class SlotMachineUI {
             scatterDisplay: document.getElementById('scatter-display'),
             bonusDisplay: document.getElementById('bonus-display'),
             btnCloseResults: document.getElementById('btn-close-results'),
-            spinIndicator: document.getElementById('spin-indicator')
+            spinIndicator: document.getElementById('spin-indicator'),
+            historyList: document.getElementById('history-list')
         };
     }
 
@@ -114,17 +119,24 @@ class SlotMachineUI {
      * Updates UI displays based on state.
      */
     updateDisplays() {
-        this.elements.creditDisplay.textContent = this.state.creditBalance;
+        this.elements.creditDisplay.textContent = Math.floor(this.state.creditBalance);
         this.elements.betDisplay.textContent = this.state.currentBet;
         this.elements.betValueInfo.textContent = this.state.currentBet;
         this.elements.multiplierDisplay.textContent = this.state.multiplierStatus + 'x';
-        
+
         this.elements.betAmountInput.value = this.state.currentBet;
         this.elements.betValueDisplay.textContent = `Current: ${this.state.currentBet}`;
-        
-        if (this.state.creditBalance < this.state.currentBet) {
+
+        const canAfford = this.state.creditBalance >= this.state.currentBet;
+        if (!canAfford) {
             this.elements.btnSpin.disabled = true;
             this.elements.btnLever.disabled = true;
+            // Only show results panel when out of gold
+            if (!this.isSpinning) {
+                this.setStatus("Thou art out of gold, Traveler! Replenish thy purse.");
+                this.elements.resultsPanel.classList.remove('hidden');
+                this.elements.resultsPanel.querySelector('h2').textContent = "Empty Purse";
+            }
         } else if (!this.isSpinning) {
             this.elements.btnSpin.disabled = false;
             this.elements.btnLever.disabled = false;
@@ -146,7 +158,7 @@ class SlotMachineUI {
      */
     renderGrid(gridData, highlightWin = false) {
         this.elements.reelsGrid.innerHTML = '';
-        
+
         for (let rowIdx = 0; rowIdx < this.config.rows; rowIdx++) {
             this.renderRow(gridData[rowIdx], highlightWin);
         }
@@ -174,7 +186,7 @@ class SlotMachineUI {
         cell.className = 'reel-cell';
         cell.setAttribute('role', 'gridcell');
         cell.dataset.reelIdx = reelIdx;
-        
+
         const img = this.createSymbolImage(symbolStr);
         this.applyCellHighlight(cell, symbolStr, highlightWin);
 
@@ -192,7 +204,7 @@ class SlotMachineUI {
         el.className = 'symbol-icon symbol';
         el.setAttribute('aria-label', symbolStr);
         el.setAttribute('role', 'img');
-        
+
         const symbolMap = {
             'CHERRY': '🧪',
             'WILD': '🐉',
@@ -203,11 +215,11 @@ class SlotMachineUI {
             'COIN': '💰',
             'VASE': '🍺'
         };
-        
+
         el.textContent = symbolMap[symbolStr] || '❓';
-        
+
         this.applySymbolClass(el, symbolStr);
-        
+
         return el;
     }
 
@@ -245,7 +257,7 @@ class SlotMachineUI {
      * @param {Object} result The spin result object.
      */
     showResults(result) {
-        this.elements.payoutDisplay.textContent = result.payout;
+        this.elements.payoutDisplay.textContent = Math.floor(result.payout);
         this.elements.scatterDisplay.textContent = result.scatters;
         this.elements.bonusDisplay.textContent = result.bonuses;
         this.elements.resultsPanel.classList.remove('hidden');
@@ -267,26 +279,50 @@ class SlotMachineUI {
     async executeSpin(power = CONSTANTS.DEFAULT_POWER) {
         if (this.isSpinning || this.state.creditBalance < this.state.currentBet) return;
         
-        this.state.setMultiplierStatus(1);
-        this.updateDisplays();
-
-        this.startSpinMode();
-        this.animateReelsSpin();
+        this.prepareForSpin();
 
         const durationMs = CONSTANTS.BASE_SPIN_DURATION - (power * CONSTANTS.POWER_MULTIPLIER);
 
         try {
-            const result = this.engine.spin();
-            this.updateDisplays();
-
+            const result = this.engine.calculateSpinResult();
             await new Promise(resolve => setTimeout(resolve, durationMs));
-
-            this.finalizeSpin(result);
+            this.applySpinResult(result);
         } catch (error) {
+            console.error("Spin error:", error);
             this.setStatus(error.message);
         } finally {
             this.endSpinMode();
         }
+    }
+
+    /**
+     * Prepares the state and UI for a new spin.
+     */
+    prepareForSpin() {
+        this.state.setCreditBalance(this.state.creditBalance - this.state.currentBet);
+        this.state.setMultiplierStatus(1);
+        this.updateDisplays();
+        this.startSpinMode();
+        this.animateReelsSpin();
+    }
+
+    /**
+     * Applies the result of a spin to the state and UI.
+     * @param {Object} result The spin result.
+     */
+    applySpinResult(result) {
+        this.state.setCreditBalance(this.state.creditBalance + result.payout);
+        this.state.setSpinResult(result.grid);
+        this.state.setMultiplierStatus(result.multiplier);
+        
+        if (result.scatters >= CONSTANTS.MIN_SCATTERS) {
+            this.engine.triggerFreeSpins();
+        }
+        if (result.bonuses >= CONSTANTS.MIN_BONUSES) {
+            this.engine.triggerBonusMiniGame();
+        }
+
+        this.finalizeSpin(result);
     }
 
     /**
@@ -323,37 +359,92 @@ class SlotMachineUI {
     }
 
     /**
+     * Adds a spin to the history sidebar.
+     * @param {number} bet - The bet amount.
+     * @param {number} payout - The payout amount.
+     */
+    addToHistory(bet, payout) {
+        if (this.elements.historyList.querySelector('.history-empty')) {
+            this.elements.historyList.innerHTML = '';
+        }
+
+        const item = document.createElement('div');
+        item.className = 'history-item' + (payout > 0 ? ' win' : '');
+
+        item.innerHTML = `
+            <div class="bet-info">
+                <span>Wager: ${bet}</span>
+            </div>
+            <div class="payout-info">
+                ${payout > 0 ? '+' + Math.floor(payout) : 'No Win'}
+            </div>
+        `;
+
+        this.elements.historyList.prepend(item);
+
+        // Keep only last items based on config
+        if (this.elements.historyList.children.length > CONSTANTS.MAX_HISTORY_ITEMS) {
+            this.elements.historyList.removeChild(this.elements.historyList.lastChild);
+        }
+    }
+
+    /**
      * Finalizes the spin and updates results.
      * @param {Object} result The spin result object.
      */
     finalizeSpin(result) {
         const hasWin = result.payout > 0;
         this.renderGrid(result.grid, hasWin);
-        this.updateDisplays(); 
 
-        if (result.multiplierTriggered) {
+        this.addToHistory(this.state.currentBet, result.payout);
+
+        if (result.multiplierTriggered && hasWin) {
             this.showMultiplierPopup(result.multiplier);
         }
 
         if (hasWin) {
-            this.setStatus(`You won ${result.payout} credits!`);
-            setTimeout(() => this.showResults(result), CONSTANTS.RESULTS_DELAY);
+            this.setStatus(`Thy fortune grows! Won ${Math.floor(result.payout)} gold.`);
+            this.showBalancePopup(result.payout);
         } else {
             this.setStatus('No win this time. Try again!');
         }
+
+        this.updateDisplays();
+    }
+
+    /**
+     * Shows a floating popup next to the gold balance.
+     * @param {number} amount The amount won.
+     */
+    showBalancePopup(amount) {
+        if (amount <= 0) return;
+
+        const popup = document.createElement('div');
+        popup.className = 'balance-popup';
+        popup.textContent = `+${Math.floor(amount)}`;
+
+        // Append to the parent of creditDisplay (info-group)
+        this.elements.creditDisplay.parentElement.appendChild(popup);
+
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.parentNode.removeChild(popup);
+            }
+        }, CONSTANTS.BALANCE_POPUP_DURATION);
     }
 
     /**
      * Shows a popup animation when a multiplier is triggered.
+
      * @param {number} newMultiplier The new multiplier value.
      */
     showMultiplierPopup(newMultiplier) {
         const popup = document.createElement('div');
         popup.className = 'multiplier-popup';
         popup.textContent = `BOON GRANTED! ${newMultiplier}x MULTIPLIER!`;
-        
+
         document.querySelector('.machine-center').appendChild(popup);
-        
+
         setTimeout(() => {
             if (popup.parentNode) {
                 popup.parentNode.removeChild(popup);
@@ -401,10 +492,10 @@ class SlotMachineUI {
     handleLeverStart(e) {
         if (this.isSpinning || this.elements.btnLever.disabled) return;
         e.preventDefault();
-        
+
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         this.leverPhysics.startPull(clientY, performance.now());
-        
+
         this.elements.btnLever.classList.add('pulling');
     }
 
@@ -414,16 +505,16 @@ class SlotMachineUI {
      */
     handleLeverMove(e) {
         if (!this.leverPhysics.isPulling) return;
-        
+
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         this.leverPhysics.updatePull(clientY);
-        
+
         let distance = this.leverPhysics.currentY - this.leverPhysics.startY;
         if (distance < 0) distance = 0;
-        
+
         let rotation = (distance / this.leverPhysics.pullThreshold) * CONSTANTS.ROTATION_MULTIPLIER;
         if (rotation > CONSTANTS.MAX_ROTATION) rotation = CONSTANTS.MAX_ROTATION;
-        
+
         const scaleY = 1 - (rotation / CONSTANTS.ROTATION_SCALE);
         this.elements.btnLever.style.transform = `rotateX(${rotation}deg) scaleY(${scaleY})`;
     }
@@ -433,12 +524,12 @@ class SlotMachineUI {
      */
     handleLeverEnd() {
         if (!this.leverPhysics.isPulling) return;
-        
+
         const result = this.leverPhysics.endPull(performance.now());
-        
+
         this.elements.btnLever.classList.remove('pulling');
         this.elements.btnLever.style.transform = '';
-        
+
         if (result.triggered) {
             this.executeSpin(result.spinPower);
         } else {
@@ -463,7 +554,7 @@ class SlotMachineUI {
         this.elements.btnLever.addEventListener('touchstart', (e) => this.handleLeverStart(e), { passive: false });
         document.addEventListener('touchmove', (e) => this.handleLeverMove(e), { passive: false });
         document.addEventListener('touchend', () => this.handleLeverEnd());
-        
+
         window.addEventListener('resize', () => this.adjustScale());
         if (document.fonts) {
             document.fonts.ready.then(() => this.adjustScale());
@@ -476,26 +567,26 @@ class SlotMachineUI {
     adjustScale() {
         const container = document.querySelector('.slot-machine-container');
         if (!container) return;
-        
+
         // Fixed base dimensions to stop layout feedback loops
-        const cssWidth = 960; 
+        const cssWidth = 960;
         const cssHeight = 890;
         const paddingX = 40;
         const paddingY = CONSTANTS.HEIGHT_PADDING; // Increased padding to protect bottom edge
-        
+
         const isDesktop = window.innerWidth > CONSTANTS.MOBILE_BREAKPOINT;
-        
+
         const finalWidth = (isDesktop ? cssWidth + CONSTANTS.LEVER_WIDTH : cssWidth) + paddingX;
         const finalHeight = cssHeight + paddingY;
-        
+
         // Use a more conservative scale to ensure it fits comfortably
         const scale = Math.min(window.innerWidth / finalWidth, window.innerHeight / finalHeight, CONSTANTS.MAX_SCALE);
-        
+
         // Calculate offset to perfectly center the container + lever visually.
         // The lever is 70px wide and extends to the right. We offset the container by -35px
         // within the scaled transform so flexbox perfectly centers the visual group.
         const offsetX = isDesktop ? CONSTANTS.CENTER_OFFSET : 0;
-        
+
         // Align the scale center to the visual center
         container.style.transformOrigin = 'center center';
         container.style.transform = `scale(${scale}) translateX(${offsetX}px) translateY(${CONSTANTS.VERTICAL_OFFSET}px)`;
@@ -505,10 +596,17 @@ class SlotMachineUI {
      * Renders the initial grid state.
      */
     initialRender() {
-        const initialGrid = RngService.generateGrid(this.config);
-        this.renderGrid(initialGrid, false);
-        this.updateDisplays();
-        this.adjustScale();
+        try {
+            console.log("Initializing Slot Machine symbols...");
+            const initialGrid = RngService.generateGrid(this.config);
+            this.renderGrid(initialGrid, false);
+            this.updateDisplays();
+            this.adjustScale();
+            console.log("Initialization complete.");
+        } catch (error) {
+            console.error("Failed to initialize Slot Machine:", error);
+            this.setStatus("Error initializing game. Please refresh.");
+        }
     }
 }
 
