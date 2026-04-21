@@ -464,9 +464,11 @@ class SlotMachineEngine {
         
         this.state.setCreditBalance(this.state.creditBalance + finalPayout);
         
+        let multiplierTriggered = false;
         if (evaluation.scatterCount >= MIN_SCATTERS_FOR_TRIGGER) {
             this.triggerFreeSpins();
             this.triggerMultiplierBase();
+            multiplierTriggered = true;
         }
         
         if (evaluation.bonusCount >= MIN_BONUS_FOR_TRIGGER) {
@@ -477,7 +479,9 @@ class SlotMachineEngine {
             grid: newGrid,
             payout: finalPayout,
             scatters: evaluation.scatterCount,
-            bonuses: evaluation.bonusCount
+            bonuses: evaluation.bonusCount,
+            multiplier: this.state.multiplierStatus,
+            multiplierTriggered: multiplierTriggered
         };
     }
 }

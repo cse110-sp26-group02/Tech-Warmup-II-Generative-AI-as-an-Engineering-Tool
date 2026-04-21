@@ -22,7 +22,8 @@ const CONSTANTS = {
     MAX_ROTATION: 75,
     ROTATION_MULTIPLIER: 60,
     ROTATION_SCALE: 200,
-    RADIX: 10
+    RADIX: 10,
+    POPUP_DURATION: 3000
 };
 
 /**
@@ -321,12 +322,34 @@ class SlotMachineUI {
         this.renderGrid(result.grid, hasWin);
         this.updateDisplays(); 
 
+        if (result.multiplierTriggered) {
+            this.showMultiplierPopup(result.multiplier);
+        }
+
         if (hasWin) {
             this.setStatus(`You won ${result.payout} credits!`);
             setTimeout(() => this.showResults(result), CONSTANTS.RESULTS_DELAY);
         } else {
             this.setStatus('No win this time. Try again!');
         }
+    }
+
+    /**
+     * Shows a popup animation when a multiplier is triggered.
+     * @param {number} newMultiplier The new multiplier value.
+     */
+    showMultiplierPopup(newMultiplier) {
+        const popup = document.createElement('div');
+        popup.className = 'multiplier-popup';
+        popup.textContent = `BOON GRANTED! ${newMultiplier}x MULTIPLIER!`;
+        
+        document.querySelector('.machine-center').appendChild(popup);
+        
+        setTimeout(() => {
+            if (popup.parentNode) {
+                popup.parentNode.removeChild(popup);
+            }
+        }, CONSTANTS.POPUP_DURATION);
     }
 
     /**
@@ -344,8 +367,12 @@ class SlotMachineUI {
      * Handles adding credits.
      */
     handleAddCredits() {
+        if (this.state.creditBalance >= this.state.currentBet && this.state.creditBalance > 0) {
+            this.setStatus('Thou hast enough gold! Spin the reels.');
+            return;
+        }
         this.state.setCreditBalance(this.state.creditBalance + CONSTANTS.ADD_CREDITS_AMOUNT);
-        this.setStatus(`Added ${CONSTANTS.ADD_CREDITS_AMOUNT} credits.`);
+        this.setStatus(`A patron grants thee ${CONSTANTS.ADD_CREDITS_AMOUNT} gold.`);
         this.updateDisplays();
     }
 
