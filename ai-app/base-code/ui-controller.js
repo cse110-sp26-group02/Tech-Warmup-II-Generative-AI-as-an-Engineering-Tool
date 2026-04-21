@@ -24,7 +24,10 @@ const CONSTANTS = {
     ROTATION_SCALE: 200,
     RADIX: 10,
     POPUP_DURATION: 3000,
-    MOBILE_BREAKPOINT: 900
+    MOBILE_BREAKPOINT: 900,
+    LEVER_WIDTH: 70,
+    CENTER_OFFSET: -35,
+    VERTICAL_OFFSET: -20
 };
 
 /**
@@ -460,6 +463,9 @@ class SlotMachineUI {
         document.addEventListener('touchend', () => this.handleLeverEnd());
         
         window.addEventListener('resize', () => this.adjustScale());
+        if (document.fonts) {
+            document.fonts.ready.then(() => this.adjustScale());
+        }
     }
 
     /**
@@ -469,25 +475,28 @@ class SlotMachineUI {
         const container = document.querySelector('.slot-machine-container');
         if (!container) return;
         
-        // Base dimensions we designed the machine around
-        const baseWidth = 1100;
-        const baseHeight = 1000;
+        // Fixed base dimensions to stop layout feedback loops
+        const cssWidth = 1050; 
+        const cssHeight = 980;
+        const paddingX = 40;
+        const paddingY = 80; // Increased padding to protect bottom edge
         
-        const scaleX = window.innerWidth / baseWidth;
-        const scaleY = window.innerHeight / baseHeight;
+        const isDesktop = window.innerWidth > CONSTANTS.MOBILE_BREAKPOINT;
         
-        let scale = Math.min(scaleX, scaleY);
-        if (scale > 1) scale = 1; // Don't scale up past 100%
+        const finalWidth = (isDesktop ? cssWidth + CONSTANTS.LEVER_WIDTH : cssWidth) + paddingX;
+        const finalHeight = cssHeight + paddingY;
         
-        // Apply transform and offset lever horizontally if needed
-        container.style.transform = `scale(${scale})`;
+        // Use a more conservative scale (0.8) to ensure it fits comfortably
+        const scale = Math.min(window.innerWidth / finalWidth, window.innerHeight / finalHeight, 0.8);
         
-        // Hide lever visually on very small screens or keep it centered
-        if (window.innerWidth <= 900) {
-            container.style.left = '0';
-        } else {
-            container.style.left = '-35px'; // Compensate for the physical lever on the right side
-        }
+        // Calculate offset to perfectly center the container + lever visually.
+        // The lever is 70px wide and extends to the right. We offset the container by -35px
+        // within the scaled transform so flexbox perfectly centers the visual group.
+        const offsetX = isDesktop ? CONSTANTS.CENTER_OFFSET : 0;
+        
+        // Align the scale center to the visual center
+        container.style.transformOrigin = 'center center';
+        container.style.transform = `scale(${scale}) translateX(${offsetX}px) translateY(${CONSTANTS.VERTICAL_OFFSET}px)`;
     }
 
     /**
