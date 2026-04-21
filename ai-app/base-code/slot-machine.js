@@ -391,6 +391,12 @@ class PaylineEvaluator {
 
 const MIN_SCATTERS_FOR_TRIGGER = 1;
 const MIN_BONUS_FOR_TRIGGER = 3;
+const MULTIPLIER_CHANCE = 0.15;
+const MULT_2X = 2;
+const MULT_3X = 3;
+const MULT_5X = 5;
+const MULT_10X = 10;
+const POSSIBLE_MULTIPLIERS = [MULT_2X, MULT_3X, MULT_5X, MULT_10X];
 
 /**
  * Engine to handle slot machine execution.
@@ -423,16 +429,6 @@ class SlotMachineEngine {
     }
 
     /**
-     * Triggers a base multiplier increase.
-     * @returns {void}
-     */
-    triggerMultiplierBase() {
-        // Stub for multiplier logic
-        this.state.setMultiplierStatus(this.state.multiplierStatus + 1);
-        console.log('Multiplier Increased!');
-    }
-
-    /**
      * Triggers the bonus mini-game feature.
      * @returns {void}
      */
@@ -440,6 +436,18 @@ class SlotMachineEngine {
         // Stub for bonus mini-game logic
         this.state.setBonusStatus(true);
         console.log('Bonus Mini Game Triggered!');
+    }
+
+    /**
+     * Calculates the random multiplier.
+     * @param {number} scatterCount - Number of scatters.
+     * @returns {number} The calculated multiplier.
+     */
+    calculateRandomMultiplier(scatterCount) {
+        if (scatterCount >= 1 || Math.random() < MULTIPLIER_CHANCE) {
+            return POSSIBLE_MULTIPLIERS[Math.floor(Math.random() * POSSIBLE_MULTIPLIERS.length)];
+        }
+        return 1;
     }
 
     /**
@@ -460,15 +468,22 @@ class SlotMachineEngine {
         
         const evaluation = PaylineEvaluator.evaluateGrid(newGrid, this.config);
         
-        const finalPayout = evaluation.payout * this.state.multiplierStatus;
+        let currentMultiplier = 1;
+        
+        if (evaluation.payout > 0) {
+            currentMultiplier = this.calculateRandomMultiplier(evaluation.scatterCount);
+        }
+        
+        const multiplierTriggered = currentMultiplier > 1;
+        
+        this.state.setMultiplierStatus(currentMultiplier);
+        
+        const finalPayout = evaluation.payout * currentMultiplier;
         
         this.state.setCreditBalance(this.state.creditBalance + finalPayout);
         
-        let multiplierTriggered = false;
         if (evaluation.scatterCount >= MIN_SCATTERS_FOR_TRIGGER) {
             this.triggerFreeSpins();
-            this.triggerMultiplierBase();
-            multiplierTriggered = true;
         }
         
         if (evaluation.bonusCount >= MIN_BONUS_FOR_TRIGGER) {
@@ -480,7 +495,7 @@ class SlotMachineEngine {
             payout: finalPayout,
             scatters: evaluation.scatterCount,
             bonuses: evaluation.bonusCount,
-            multiplier: this.state.multiplierStatus,
+            multiplier: currentMultiplier,
             multiplierTriggered: multiplierTriggered
         };
     }

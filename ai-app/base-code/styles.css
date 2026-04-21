@@ -44,13 +44,15 @@ body {
     background-color: #000;
     color: var(--color-parchment);
     font-family: var(--font-medieval);
-    min-height: 100vh;
-    padding: 40px 20px;
-    overflow-x: hidden;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
 }
 
 /* Animated Background */
@@ -135,13 +137,16 @@ body {
 .slot-machine-container {
     width: 100%;
     max-width: 1050px;
-    margin: auto 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
     filter: drop-shadow(0 30px 60px rgba(0,0,0,1));
     z-index: 1;
+    transform: scale(calc(min(1, 100vh / 1000, 100vw / 1100)));
+    transform-origin: center center;
+    left: -35px; /* Offset horizontally to perfectly center the machine, negating the right-side lever width */
 }
 
 /* Machine Crown (Top piece) */

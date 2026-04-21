@@ -261,6 +261,9 @@ class SlotMachineUI {
     async executeSpin(power = CONSTANTS.DEFAULT_POWER) {
         if (this.isSpinning || this.state.creditBalance < this.state.currentBet) return;
         
+        this.state.setMultiplierStatus(1);
+        this.updateDisplays();
+
         this.startSpinMode();
         this.animateReelsSpin();
 
