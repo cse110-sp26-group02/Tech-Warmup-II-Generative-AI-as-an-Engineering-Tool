@@ -144,9 +144,7 @@ body {
     position: relative;
     filter: drop-shadow(0 30px 60px rgba(0,0,0,1));
     z-index: 1;
-    transform: scale(calc(min(1, 100vh / 1000, 100vw / 1100)));
     transform-origin: center center;
-    left: -35px; /* Offset horizontally to perfectly center the machine, negating the right-side lever width */
 }
 
 /* Machine Crown (Top piece) */

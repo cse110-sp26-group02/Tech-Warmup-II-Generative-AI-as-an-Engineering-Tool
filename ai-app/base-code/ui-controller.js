@@ -23,7 +23,8 @@ const CONSTANTS = {
     ROTATION_MULTIPLIER: 60,
     ROTATION_SCALE: 200,
     RADIX: 10,
-    POPUP_DURATION: 3000
+    POPUP_DURATION: 3000,
+    MOBILE_BREAKPOINT: 900
 };
 
 /**
@@ -457,6 +458,36 @@ class SlotMachineUI {
         this.elements.btnLever.addEventListener('touchstart', (e) => this.handleLeverStart(e), { passive: false });
         document.addEventListener('touchmove', (e) => this.handleLeverMove(e), { passive: false });
         document.addEventListener('touchend', () => this.handleLeverEnd());
+        
+        window.addEventListener('resize', () => this.adjustScale());
+    }
+
+    /**
+     * Dynamically scales the slot machine container to fit the viewport perfectly.
+     */
+    adjustScale() {
+        const container = document.querySelector('.slot-machine-container');
+        if (!container) return;
+        
+        // Base dimensions we designed the machine around
+        const baseWidth = 1100;
+        const baseHeight = 1000;
+        
+        const scaleX = window.innerWidth / baseWidth;
+        const scaleY = window.innerHeight / baseHeight;
+        
+        let scale = Math.min(scaleX, scaleY);
+        if (scale > 1) scale = 1; // Don't scale up past 100%
+        
+        // Apply transform and offset lever horizontally if needed
+        container.style.transform = `scale(${scale})`;
+        
+        // Hide lever visually on very small screens or keep it centered
+        if (window.innerWidth <= 900) {
+            container.style.left = '0';
+        } else {
+            container.style.left = '-35px'; // Compensate for the physical lever on the right side
+        }
     }
 
     /**
@@ -466,6 +497,7 @@ class SlotMachineUI {
         const initialGrid = RngService.generateGrid(this.config);
         this.renderGrid(initialGrid, false);
         this.updateDisplays();
+        this.adjustScale();
     }
 }
 
