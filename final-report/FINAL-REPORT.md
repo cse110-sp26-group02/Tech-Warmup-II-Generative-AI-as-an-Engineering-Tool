@@ -21,7 +21,7 @@ We quickly found that our initial strategy of developing the JavaScript logic in
 Our final, evolved workflow was a more balanced incremental approach. We focused on adding only one or two features per prompt, which created manageable and testable steps. We also refined our testing strategy to run unit tests primarily when JavaScript files were modified, ensuring our core logic remained while we built out the UI and styling. Whenever there were changes made to the HTML and CSS file, we manually validated them with W3C.
 
 ### Our Runs and AI Interactions
-Our `ai-use-log.md` contains the 20 runs.
+Our `ai-use-log.md` contains our 25 entries (from our 25 prompts).
 
 - **What Worked:**
   - **Priming:** Providing the AI with upfront context, rules, and constraints (Run 0) was initially effective. The AI adhered to these rules in subsequent prompts, going out its way to also make thorough unit tests too without prompting. However as we progressed, later runs seemed to follow these rules less (more validation/linting issues) perhaps because of the big prompts we gave it.
@@ -47,6 +47,7 @@ Our initial research and planning phase was critical to the project's success. B
 1.  **Prompt Specificity and Understanding:** Vague or overly broad prompts led to generic or incorrect output. We learned that the quality of the AI's output is directly proportional to the quality and detail of the prompt. For example, asking for a full HTML page at once (Run 5) failed validation, whereas asking for specific fixes (Run 6) succeeded. We also learned that Gemini often addresses the issues in the prompt sequentially. For example, if the prompt addresses linting issues first and later a feature that we wanted to change, Gemini would focus on the linting issues first and then changing the feature (vice-versa too). This intrinsically puts priority into certain places in our prompt that maybe undesired.
 2.  **Validation is Non-Negotiable:** AI-generated code cannot be trusted blindly. We encountered validation errors in HTML and linting issues in JavaScript. A rigorous workflow that includes validation steps (using W3C validators, ESLint) is essential to ensure code quality and correctness.
 3.  **Technical Debt:** While the AI could generate complex logic, debugging it required a solid understanding of the code. Without a visual interface, it was challenging to understand the state and behavior of the application, which highlighted the need for an iterative process that combines logic and UI development as well as manual/human input.
+4.  **Compliance and Variance Drift** Even though we primed the LLM early on in Run 0, it frequently reintroduced magic numbers or failed JSDoc requirements in later runs (Run 1, 9, and 11). While the LLM was highly competent at CSS and JS logic, it consistently struggled to generate W3C-valid HTML whenever the structure became complex or involved ARIA attributes (Runs 5, 10, and 13).
 
 ### The Future of AI in Our Team's Process
 - We will likely continue to use AI as a tool for assisting our development process, particularly for generating prototypes and writing unit tests. Hearing its suggestions for well-defined features will also probably take place too.
