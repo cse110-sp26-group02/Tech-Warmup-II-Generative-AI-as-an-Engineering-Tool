@@ -48,7 +48,7 @@ Based on our research, we will define the core components of our desired slot ma
 
 We will follow an incremental, AI-assisted process for building the application. Each feature or phase will follow this standard workflow:
 
-1.  **Prompt:** Clearly define the task for the AI.
+1.  **Prompt:** Clearly define the task for the AI. 
 2.  **Review & Validate:**
     -   Manually review the generated code for clarity and correctness (e.g., clear variable names, clean structure).
     -   Use linters and validators to ensure code quality:
@@ -76,6 +76,7 @@ The project will be developed in distinct phases, building upon each other.
 - **Actions:**
     -   Provide the AI with the research overview, user personas, and user stories.
     -   Establish the desired architecture and development plan.
+    -   Detail code standards for quality, testing, documentation, and linting
 - **Note:** No code/files will be generated in this phase.
 - **Prompt:** Can be found in [ai-use-log](./ai-use-log.md)
 
@@ -99,6 +100,7 @@ The project will be developed in distinct phases, building upon each other.
     -   Prompt the AI to build the basic HTML structure.
     -   Wire the existing JavaScript engine to the HTML elements.
     -   Ensure no JavaScript logic is in the HTML file.
+    -   Ensure accessibility is a priority while generating HTML.
 - **Process:**
     -   Follow the standard workflow and test the full application to ensure the engine and UI are correctly integrated.
 
@@ -118,6 +120,10 @@ The project will be developed in distinct phases, building upon each other.
     -   Wild symbols
     -   Scatter symbols
     -   Free spins
+    -   Welcome page
+    -   Music and sound
+    -   Share screenshot of jackpot win
+    -   History of past runs
     -   Other planned bonus rounds
 - **Process:**
     -   For each bonus feature, follow the standard AI-Driven Development Workflow, including logic, UI, and styling.
