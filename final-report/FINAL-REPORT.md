@@ -61,9 +61,12 @@ Here is the final appearance of our Medieval themed slot machine:
 
 ![Final Slot Machine Look](final-slot-machine-look.png)
 
+A video demonstration of the final product can be found here: [Slot Machine Demo](slot-machine-wu2-demo.mp4)
+
 ### Quality Assurance & Validation
 
 Our project successfully passed all quality checks.
+
 
 - **JavaScript Linting (ESLint):** All JavaScript code passed our strict ESLint rules, ensuring code quality, consistency, and readability.
   ![ESLint Pass](linter-pass.png)
