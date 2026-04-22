@@ -30,6 +30,6 @@ npm run lint
 ```
 
 ## Link to game 
-https://github.com/cse110-sp26-group02/Tech-Warmup-II-Generative-AI-as-an-Engineering-Tool
+https://github.com/cse110-sp26-group02/Tech-Warmup-II-Generative-AI-as-an-Engineering-Tool/ai-app/base-code/index.html
 
 
