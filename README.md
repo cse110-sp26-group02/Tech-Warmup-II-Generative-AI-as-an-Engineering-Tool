@@ -27,7 +27,7 @@ This project is organized into several key documents that track our process from
 
 ---
 
-## For our development
+*For our development*
 
 ## Setup
 

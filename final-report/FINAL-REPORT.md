@@ -63,7 +63,7 @@ Here is the final appearance of our Medieval themed slot machine:
 
 ### Quality Assurance & Validation
 
-Our project successfully passed all quality checks, ensuring it adheres to modern web standards.
+Our project successfully passed all quality checks.
 
 - **JavaScript Linting (ESLint):** All JavaScript code passed our strict ESLint rules, ensuring code quality, consistency, and readability.
   ![ESLint Pass](linter-pass.png)
