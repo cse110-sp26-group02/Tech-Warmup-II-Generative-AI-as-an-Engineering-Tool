@@ -70,16 +70,16 @@ Our project successfully passed all quality checks.
 
 
 - **JavaScript Linting (ESLint):** All JavaScript code passed our strict ESLint rules, ensuring code quality, consistency, and readability.
-  ![ESLint Pass](linter-pass.png)
+  ![ESLint Pass](./validation-passes-imgs/linter-pass.png)
 
 - **Unit Tests:** The core logic of the application is covered by a suite of unit tests, all of which passed successfully.
-  ![Unit Tests Pass](unittests-pass.png)
+  ![Unit Tests Pass](./validation-passes-imgs/unittests-pass.png)
 
 - **HTML Validation (W3C):** The final HTML structure is fully compliant with W3C standards.
-  ![HTML Validation Pass](html-valid.png)
+  ![HTML Validation Pass](./validation-passes-imgs/html-valid.png)
 
 - **CSS Validation (W3C):** The stylesheet is valid according to the W3C CSS Validator.
-  ![CSS Validation Pass](css-valid.png)
+  ![CSS Validation Pass](./validation-passes-imgs/css-valid.png)
 
 
 
