@@ -22,7 +22,7 @@ This project is organized into several key documents that track our process from
 -   **[Final Report](./final-report/FINAL-REPORT.md):** A comprehensive summary of our engineering process, key learnings, challenges, and the final outcome of the project.
 
 ## Link to game
-[Game](https://cse110-sp26-group02.github.io/Tech-Warmup-II-Generative-AI-as-an-Engineering-Tool/ai-app/base-code/index.html)
+[Game](https://cse110-sp26-group02.github.io/cse110-sp26-warm-up-2/)
 
 
 ---
